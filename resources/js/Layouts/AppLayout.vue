@@ -49,17 +49,23 @@ const logout = () => {
                     <a href="/"
                         ><span
                             class="font-extrabold text-xl sm:text-2xl text-white tracking-tight select-none"
-                            >To-Do List App</span
+                            >Management App</span
                         ></a
                     >
                     <span
                         class="hidden sm:inline-block text-xs font-medium text-blue-200 dark:text-blue-300"
-                        >Organize your tasks with simplicity</span
+                        >Manage with simplicity</span
                     >
+                </div>
+                <div class="flex gap-2 ms-[-40px]">
+                    <NavLink href="/clients" :active="false"> Clients </NavLink>
+                    <NavLink href="/suppliers" :active="false">
+                        Suppliers
+                    </NavLink>
                 </div>
 
                 <!-- Right side navigation items -->
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-2 ms-8">
                     <!-- Login/Register buttons for guest users -->
                     <template v-if="!$page.props.auth.user">
                         <Link
@@ -224,7 +230,7 @@ const logout = () => {
                                         class="flex text-sm border-2 border-transparent rounded-full focus:outline-none focus:border-gray-300 transition"
                                     >
                                         <img
-                                            class="size-8 rounded-full object-cover"
+                                            class="size-10 rounded-full object-cover"
                                             :src="
                                                 $page.props.auth.user
                                                     .profile_photo_url
