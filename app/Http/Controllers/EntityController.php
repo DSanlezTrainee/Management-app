@@ -48,6 +48,12 @@ class EntityController extends Controller
      */
     public function create(Request $request)
     {
+        // Store the referring URL in session, but only if it's not the create form itself
+        $referer = request()->headers->get('referer');
+        if ($referer && !str_contains($referer, '/entities/create')) {
+            session(['entity_create_referer' => $referer]);
+        }
+
         $type = $request->query('type');
         $countries = Country::orderBy('name')->get(['id', 'name', 'code']);
         return Inertia::render('Entities/Create', [
@@ -61,10 +67,14 @@ class EntityController extends Controller
      */
     public function store(Request $request)
     {
+        // Verificação personalizada para NIFs duplicados
+        if (Entity::nifExists($request->input('nif'))) {
+            return back()->withErrors(['nif' => 'The NIF has already been taken.'])->withInput();
+        }
+
         $validated = $request->validate([
             'type' => 'required|in:client,supplier,both',
-            'number' => 'required|integer|unique:entities,number',
-            'nif' => ['required', 'string', 'unique:entities,nif', function ($attribute, $value, $fail) {
+            'nif' => ['required', 'string', function ($attribute, $value, $fail) {
                 if (!preg_match('/^[1|2|3|5|6|8|9][0-9]{8}$/', $value)) {
                     $fail('NIF must have 9 digits and start with 1,2,3,5,6,8 or 9.');
                 }
@@ -83,8 +93,24 @@ class EntityController extends Controller
             'status' => 'required|in:active,inactive',
         ]);
 
+        $nextNumber = (Entity::max('number') ?? 0) + 1;
+        $validated['number'] = $nextNumber;
+
         $entity = Entity::create($validated);
-        return redirect()->route('entities.index')->with('success', 'Entity created successfully!');
+
+        // Redirecionar para a URL armazenada na sessão, ou para a lista padrão se não existir
+        $redirectUrl = session('entity_create_referer');
+        if ($redirectUrl) {
+            session()->forget('entity_create_referer');
+            return redirect($redirectUrl)->with('success', 'Entity created successfully!');
+        }
+
+        // Fallback: redirecionar com base no tipo da entidade
+        if ($entity->type === 'client' || $entity->type === 'both') {
+            return redirect()->route('entities.clients')->with('success', 'Entity created successfully!');
+        } else {
+            return redirect()->route('entities.suppliers')->with('success', 'Entity created successfully!');
+        }
     }
 
     /**
@@ -112,10 +138,14 @@ class EntityController extends Controller
      */
     public function update(Request $request, Entity $entity)
     {
+        if ($request->input('nif') !== $entity->nif && Entity::nifExists($request->input('nif'), $entity->id)) {
+            return back()->withErrors(['nif' => 'The NIF has already been taken.'])->withInput();
+        }
+
         $validated = $request->validate([
             'type' => 'required|in:client,supplier,both',
             'number' => 'required|integer|unique:entities,number,' . $entity->id,
-            'nif' => ['required', 'string', 'unique:entities,nif,' . $entity->id, function ($attribute, $value, $fail) {
+            'nif' => ['required', 'string', function ($attribute, $value, $fail) {
                 if (!preg_match('/^[1|2|3|5|6|8|9][0-9]{8}$/', $value)) {
                     $fail('NIF must have 9 digits and start with 1,2,3,5,6,8 or 9.');
                 }
@@ -135,7 +165,12 @@ class EntityController extends Controller
         ]);
 
         $entity->update($validated);
-        return redirect()->route('entities.index')->with('success', 'Entity updated successfully!');
+
+        if ($entity->type === 'client' || $entity->type === 'both') {
+            return redirect()->route('entities.clients')->with('success', 'Entity updated successfully!');
+        } else {
+            return redirect()->route('entities.suppliers')->with('success', 'Entity updated successfully!');
+        }
     }
 
     /**
@@ -143,8 +178,14 @@ class EntityController extends Controller
      */
     public function destroy(Entity $entity)
     {
+        $type = $entity->type;
         $entity->delete();
-        return redirect()->route('entities.index')->with('success', 'Entity deleted successfully!');
+
+        if ($type === 'client' || $type === 'both') {
+            return redirect()->route('entities.clients')->with('success', 'Entity deleted successfully!');
+        } else {
+            return redirect()->route('entities.suppliers')->with('success', 'Entity deleted successfully!');
+        }
     }
     /**
      * VIES VAT number lookup.
@@ -159,36 +200,58 @@ class EntityController extends Controller
         $countryCode = strtoupper($request->input('country_code'));
         $vatNumber = preg_replace('/\D/', '', $request->input('vat_number'));
 
-        Log::info('VIES lookup request', [
+        Log::info('VIES REST lookup request', [
             'country_code' => $countryCode,
             'vat_number' => $vatNumber,
         ]);
 
         try {
-            $client = new \SoapClient('https://ec.europa.eu/taxation_customs/vies/checkVatService.wsdl');
-            $result = $client->checkVat([
+            $endpoint = 'https://ec.europa.eu/taxation_customs/vies/rest-api//check-vat-number'; // duas barras
+            $payload = [
                 'countryCode' => $countryCode,
                 'vatNumber' => $vatNumber,
+            ];
+            Log::info('VIES REST request', [
+                'endpoint' => $endpoint,
+                'payload' => $payload
+            ]);
+            $response = \Illuminate\Support\Facades\Http::timeout(10)
+                ->acceptJson()
+                ->post($endpoint, $payload);
+
+            Log::info('VIES REST raw response', [
+                'status' => $response->status(),
+                'body' => $response->body()
             ]);
 
-            Log::info('VIES lookup result', [
-                'result' => $result
-            ]);
+            $data = $response->json();
 
-            if ($result->valid) {
+            // Se a resposta do VIES foi recebida, devolve sempre 200
+            if ($response->ok() && isset($data['valid'])) {
                 return response()->json([
-                    'valid' => true,
-                    'name' => $result->name,
-                    'address' => $result->address,
+                    'valid' => $data['valid'],
+                    'name' => $data['name'] ?? ($data['traderName'] ?? ''),
+                    'address' => $data['address'] ?? ($data['traderAddress'] ?? ''),
+                    'raw' => $data,
                 ]);
             } else {
-                return response()->json(['valid' => false], 404);
+                // Se o VIES respondeu mas não tem campo 'valid', devolve erro genérico mas status 200
+                return response()->json([
+                    'valid' => false,
+                    'message' => $data['message'] ?? 'Erro desconhecido na resposta do VIES',
+                    'status' => $response->status(),
+                    'body' => $response->body(),
+                ]);
             }
         } catch (\Exception $e) {
-            Log::error('VIES lookup error', [
+            Log::error('VIES REST lookup error', [
                 'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
             ]);
-            return response()->json(['error' => 'VIES service unavailable', 'details' => $e->getMessage()], 500);
+            return response()->json([
+                'error' => 'Serviço VIES indisponível. Tente novamente mais tarde.',
+                'details' => $e->getMessage(),
+            ], 503);
         }
     }
 }

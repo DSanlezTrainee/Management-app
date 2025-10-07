@@ -2,12 +2,10 @@
 import AppLayout from "@/Layouts/AppLayout.vue";
 import { ref, onMounted, watch } from "vue";
 import {
-    Form,
     FormField,
     FormItem,
     FormLabel,
     FormControl,
-    FormMessage,
 } from "@/Components/ui/form";
 import {
     Select,
@@ -17,48 +15,46 @@ import {
     SelectValue,
 } from "@/Components/ui/select";
 import TextInput from "@/Components/TextInput.vue";
-import { useForm } from "vee-validate";
-import { router } from "@inertiajs/vue3";
+import { useForm, router, usePage } from "@inertiajs/vue3";
+import { computed } from "vue";
+const page = usePage();
+const backendErrors = computed(() => page.props.errors || {});
 
 const props = defineProps({
     countries: Array,
     type: String,
 });
 
-// Refs para selects controlados
 const typeRef = ref(props.type || "client");
 const countryIdRef = ref(
     props.countries && props.countries.length > 0 ? props.countries[0].id : "",
 );
 
-// Initialize with empty name to prevent flashing
+const old = page.props?.old || {};
 const form = useForm({
-    type: typeRef.value,
-    number: "",
-    nif: "",
-    name: "",
-    address: "",
-    postal_code: "",
-    city: "",
-    country_id: countryIdRef.value,
-    phone: "",
-    mobile: "",
-    website: "",
-    email: "",
-    rgpd_consent: false,
-    notes: "",
-    status: "active",
+    type: old.type ?? typeRef.value,
+    number: old.number ?? "",
+    nif: old.nif ?? "",
+    name: old.name ?? "",
+    address: old.address ?? "",
+    postal_code: old.postal_code ?? "",
+    city: old.city ?? "",
+    country_id: old.country_id ?? countryIdRef.value,
+    phone: old.phone ?? "",
+    mobile: old.mobile ?? "",
+    website: old.website ?? "",
+    email: old.email ?? "",
+    rgpd_consent: old.rgpd_consent ?? false,
+    notes: old.notes ?? "",
+    status: old.status ?? "active",
 });
 
-// Watch for prop changes and update form.type and country_id accordingly
-// Sincronizar refs com form do vee-validate
 watch(typeRef, (val) => {
     form.type = val;
 });
 watch(countryIdRef, (val) => {
     form.country_id = val;
 });
-// Se props mudarem, atualizar refs
 watch(
     () => props.type,
     (newType) => {
@@ -92,7 +88,10 @@ async function lookupVIES() {
     loadingVies.value = true;
     try {
         const country = props.countries.find((c) => c.id == form.country_id);
-        if (!country) return;
+        if (!country) {
+            loadingVies.value = false;
+            return;
+        }
         const response = await fetch("/entities/vies-lookup", {
             method: "POST",
             headers: {
@@ -105,14 +104,28 @@ async function lookupVIES() {
                 vat_number: form.nif,
             }),
         });
-        const data = await response.json();
+        let data = null;
+        try {
+            data = await response.json();
+        } catch (jsonErr) {
+            console.error("Erro ao fazer parse do JSON do VIES:", jsonErr);
+            viesError.value = "Erro ao processar resposta do VIES.";
+            return;
+        }
+        console.log("Resposta VIES:", data);
         if (data.valid) {
             form.name = data.name;
             form.address = data.address;
+            viesError.value = "";
+        } else if (data.message) {
+            viesError.value = data.message;
+        } else if (data.error) {
+            viesError.value = data.error;
         } else {
             viesError.value = "NIF not found or not valid in VIES.";
         }
     } catch (e) {
+        console.error("Erro na chamada VIES:", e);
         viesError.value = "VIES service unavailable.";
     } finally {
         loadingVies.value = false;
@@ -120,13 +133,19 @@ async function lookupVIES() {
 }
 
 function submit() {
-    router.post(route("entities.store"), form);
+    console.log("Submitting form with values:", form.data());
+
+    form.post(route("entities.store"), {
+        onSuccess: () => {
+            console.log("Form submitted successfully!");
+        },
+        onError: (errors) => {
+            console.log("Form submission errors:", errors);
+        },
+    });
 }
 
 onMounted(() => {
-    // Ensure name is empty on mount
-    form.name = "";
-    // Clear any potential browser autofill immediately
     if (nameInput.value) {
         const input = nameInput.value.$el || nameInput.value;
         if (input) {
@@ -145,7 +164,8 @@ onMounted(() => {
             </h2>
         </template>
         <div class="py-6 max-w-3xl mx-auto">
-            <Form @submit.prevent="submit">
+            <form @submit.prevent="submit">
+                <!-- Erros aparecem apenas debaixo do campo correspondente -->
                 <div
                     class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 items-start"
                 >
@@ -178,21 +198,15 @@ onMounted(() => {
                                         </Select>
                                     </div>
                                 </FormControl>
-                            </FormItem>
-                        </FormField>
-                    </div>
-                    <div class="flex flex-col gap-1 w-full">
-                        <FormField name="number">
-                            <FormItem class="w-full">
-                                <FormLabel>Number</FormLabel>
-                                <FormControl>
-                                    <TextInput
-                                        v-model="form.number"
-                                        type="number"
-                                        required
-                                        class="w-full"
-                                    />
-                                </FormControl>
+                                <!-- Exibir mensagens de erro -->
+                                <p
+                                    v-if="
+                                        form.errors.type || backendErrors.type
+                                    "
+                                    class="text-sm text-red-600 mt-1"
+                                >
+                                    {{ form.errors.type || backendErrors.type }}
+                                </p>
                             </FormItem>
                         </FormField>
                     </div>
@@ -204,7 +218,6 @@ onMounted(() => {
                                     <div class="flex gap-2 items-center w-full">
                                         <TextInput
                                             v-model="form.nif"
-                                            @blur="lookupVIES"
                                             required
                                             class="w-full"
                                         />
@@ -221,9 +234,18 @@ onMounted(() => {
                                         </button>
                                     </div>
                                 </FormControl>
-                                <FormMessage v-if="viesError">{{
-                                    viesError
-                                }}</FormMessage>
+                                <p
+                                    v-if="viesError"
+                                    class="text-sm text-red-600 mt-1"
+                                >
+                                    {{ viesError }}
+                                </p>
+                                <p
+                                    v-if="form.errors.nif || backendErrors.nif"
+                                    class="text-sm text-red-600 mt-1"
+                                >
+                                    {{ form.errors.nif || backendErrors.nif }}
+                                </p>
                             </FormItem>
                         </FormField>
                     </div>
@@ -240,9 +262,16 @@ onMounted(() => {
                                         data-form-type="other"
                                         name="_company_name_field"
                                         ref="nameInput"
-                                        value=""
                                     />
                                 </FormControl>
+                                <p
+                                    v-if="
+                                        form.errors.name || backendErrors.name
+                                    "
+                                    class="text-sm text-red-600 mt-1"
+                                >
+                                    {{ form.errors.name || backendErrors.name }}
+                                </p>
                             </FormItem>
                         </FormField>
                     </div>
@@ -256,6 +285,18 @@ onMounted(() => {
                                         class="w-full"
                                     />
                                 </FormControl>
+                                <p
+                                    v-if="
+                                        form.errors.address ||
+                                        backendErrors.address
+                                    "
+                                    class="text-sm text-red-600 mt-1"
+                                >
+                                    {{
+                                        form.errors.address ||
+                                        backendErrors.address
+                                    }}
+                                </p>
                             </FormItem>
                         </FormField>
                     </div>
@@ -270,6 +311,18 @@ onMounted(() => {
                                         class="w-full"
                                     />
                                 </FormControl>
+                                <p
+                                    v-if="
+                                        form.errors.postal_code ||
+                                        backendErrors.postal_code
+                                    "
+                                    class="text-sm text-red-600 mt-1"
+                                >
+                                    {{
+                                        form.errors.postal_code ||
+                                        backendErrors.postal_code
+                                    }}
+                                </p>
                             </FormItem>
                         </FormField>
                     </div>
@@ -283,6 +336,14 @@ onMounted(() => {
                                         class="w-full"
                                     />
                                 </FormControl>
+                                <p
+                                    v-if="
+                                        form.errors.city || backendErrors.city
+                                    "
+                                    class="text-sm text-red-600 mt-1"
+                                >
+                                    {{ form.errors.city || backendErrors.city }}
+                                </p>
                             </FormItem>
                         </FormField>
                     </div>
@@ -312,6 +373,18 @@ onMounted(() => {
                                         </Select>
                                     </div>
                                 </FormControl>
+                                <p
+                                    v-if="
+                                        form.errors.country_id ||
+                                        backendErrors.country_id
+                                    "
+                                    class="text-sm text-red-600 mt-1"
+                                >
+                                    {{
+                                        form.errors.country_id ||
+                                        backendErrors.country_id
+                                    }}
+                                </p>
                             </FormItem>
                         </FormField>
                     </div>
@@ -325,6 +398,16 @@ onMounted(() => {
                                         class="w-full"
                                     />
                                 </FormControl>
+                                <p
+                                    v-if="
+                                        form.errors.phone || backendErrors.phone
+                                    "
+                                    class="text-sm text-red-600 mt-1"
+                                >
+                                    {{
+                                        form.errors.phone || backendErrors.phone
+                                    }}
+                                </p>
                             </FormItem>
                         </FormField>
                     </div>
@@ -338,6 +421,18 @@ onMounted(() => {
                                         class="w-full"
                                     />
                                 </FormControl>
+                                <p
+                                    v-if="
+                                        form.errors.mobile ||
+                                        backendErrors.mobile
+                                    "
+                                    class="text-sm text-red-600 mt-1"
+                                >
+                                    {{
+                                        form.errors.mobile ||
+                                        backendErrors.mobile
+                                    }}
+                                </p>
                             </FormItem>
                         </FormField>
                     </div>
@@ -351,6 +446,18 @@ onMounted(() => {
                                         class="w-full"
                                     />
                                 </FormControl>
+                                <p
+                                    v-if="
+                                        form.errors.website ||
+                                        backendErrors.website
+                                    "
+                                    class="text-sm text-red-600 mt-1"
+                                >
+                                    {{
+                                        form.errors.website ||
+                                        backendErrors.website
+                                    }}
+                                </p>
                             </FormItem>
                         </FormField>
                     </div>
@@ -365,20 +472,16 @@ onMounted(() => {
                                         class="w-full"
                                     />
                                 </FormControl>
-                            </FormItem>
-                        </FormField>
-                    </div>
-                    <div class="flex flex-col gap-1 w-full">
-                        <FormField name="rgpd_consent">
-                            <FormItem class="w-full flex items-center gap-2">
-                                <FormLabel class="mb-0">RGPD Consent</FormLabel>
-                                <FormControl>
-                                    <input
-                                        type="checkbox"
-                                        v-model="form.rgpd_consent"
-                                        class="h-4 w-4"
-                                    />
-                                </FormControl>
+                                <p
+                                    v-if="
+                                        form.errors.email || backendErrors.email
+                                    "
+                                    class="text-sm text-red-600 mt-1"
+                                >
+                                    {{
+                                        form.errors.email || backendErrors.email
+                                    }}
+                                </p>
                             </FormItem>
                         </FormField>
                     </div>
@@ -407,6 +510,44 @@ onMounted(() => {
                                         </Select>
                                     </div>
                                 </FormControl>
+                                <p
+                                    v-if="
+                                        form.errors.status ||
+                                        backendErrors.status
+                                    "
+                                    class="text-sm text-red-600 mt-1"
+                                >
+                                    {{
+                                        form.errors.status ||
+                                        backendErrors.status
+                                    }}
+                                </p>
+                            </FormItem>
+                        </FormField>
+                    </div>
+                    <div class="flex flex-col gap-1 w-full">
+                        <FormField name="rgpd_consent">
+                            <FormItem class="w-full flex items-center gap-2">
+                                <FormLabel class="mb-0">RGPD Consent</FormLabel>
+                                <FormControl>
+                                    <input
+                                        type="checkbox"
+                                        v-model="form.rgpd_consent"
+                                        class="h-4 w-4"
+                                    />
+                                </FormControl>
+                                <p
+                                    v-if="
+                                        form.errors.rgpd_consent ||
+                                        backendErrors.rgpd_consent
+                                    "
+                                    class="text-sm text-red-600 mt-1"
+                                >
+                                    {{
+                                        form.errors.rgpd_consent ||
+                                        backendErrors.rgpd_consent
+                                    }}
+                                </p>
                             </FormItem>
                         </FormField>
                     </div>
@@ -415,11 +556,12 @@ onMounted(() => {
                     <button
                         type="submit"
                         class="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+                        :disabled="form.processing"
                     >
-                        Create
+                        {{ form.processing ? "Creating..." : "Create" }}
                     </button>
                 </div>
-            </Form>
+            </form>
         </div>
     </AppLayout>
 </template>

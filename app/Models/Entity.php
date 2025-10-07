@@ -42,4 +42,29 @@ class Entity extends Model
     {
         return $this->belongsTo(Country::class);
     }
+
+    /**
+     * Check if a NIF already exists in the database
+     * 
+     * @param string $nif
+     * @param int|null $excludeId ID to exclude from check (useful for updates)
+     * @return bool
+     */
+    public static function nifExists($nif, $excludeId = null)
+    {
+
+        $entities = self::all();
+
+        foreach ($entities as $entity) {
+            if ($excludeId && $entity->id == $excludeId) {
+                continue; 
+            }
+
+            if ($entity->nif == $nif) {
+                return true; 
+            }
+        }
+
+        return false; 
+    }
 }

@@ -4,7 +4,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth'])->group(function () {
     // Clients and Suppliers filtered views
     Route::get('/clients', [App\Http\Controllers\EntityController::class, 'clients'])->name('entities.clients');
     Route::get('/suppliers', [App\Http\Controllers\EntityController::class, 'suppliers'])->name('entities.suppliers');
@@ -17,6 +17,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/entities/{entity}/edit', [App\Http\Controllers\EntityController::class, 'edit'])->name('entities.edit');
     Route::put('/entities/{entity}', [App\Http\Controllers\EntityController::class, 'update'])->name('entities.update');
     Route::delete('/entities/{entity}', [App\Http\Controllers\EntityController::class, 'destroy'])->name('entities.destroy');
+
+    // VIES lookup route
+    Route::post('/entities/vies-lookup', [App\Http\Controllers\EntityController::class, 'viesLookup']);
 });
 
 
