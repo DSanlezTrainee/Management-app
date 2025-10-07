@@ -1,0 +1,15 @@
+/* 
+This CSS file adds debug styles for the select components to help
+make them visible if they're being rendered but not showing up properly
+*/
+
+.form-select-debug {
+    border: 1px solid red !important;
+    min-height: 40px !important;
+    background-color: rgba(255, 0, 0, 0.05) !important;
+}
+
+/* Make sure SelectContent appears over other elements */
+[data-radix-popper-content-wrapper] {
+    z-index: 1000 !important;
+}

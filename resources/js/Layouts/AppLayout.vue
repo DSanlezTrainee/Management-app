@@ -22,7 +22,7 @@ const switchToTeam = (team) => {
         },
         {
             preserveState: false,
-        }
+        },
     );
 };
 
@@ -58,8 +58,16 @@ const logout = () => {
                     >
                 </div>
                 <div class="flex gap-2 ms-[-40px]">
-                    <NavLink href="/clients" :active="false"> Clients </NavLink>
-                    <NavLink href="/suppliers" :active="false">
+                    <NavLink
+                        :href="route('entities.clients')"
+                        :active="route().current('entities.clients')"
+                    >
+                        Clients
+                    </NavLink>
+                    <NavLink
+                        :href="route('entities.suppliers')"
+                        :active="route().current('entities.suppliers')"
+                    >
                         Suppliers
                     </NavLink>
                 </div>
@@ -136,7 +144,7 @@ const logout = () => {
                                                 route(
                                                     'teams.show',
                                                     $page.props.auth.user
-                                                        .current_team
+                                                        .current_team,
                                                 )
                                             "
                                         >
@@ -447,7 +455,7 @@ const logout = () => {
                                 :href="
                                     route(
                                         'teams.show',
-                                        $page.props.auth.user.current_team
+                                        $page.props.auth.user.current_team,
                                     )
                                 "
                                 :active="route().current('teams.show')"
@@ -520,19 +528,12 @@ const logout = () => {
                 </div>
             </div>
 
-            <!-- Page Heading -->
-            <header
-                v-if="$slots.header"
-                class="bg-white/80 dark:bg-blue-950/80 backdrop-blur-sm shadow-md mt-16"
-            >
-                <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
-                    <slot name="header" />
-                </div>
-            </header>
-
-            <!-- Page Content -->
+            <!-- Page Content & Heading Aligned -->
             <main class="pt-20">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div v-if="$slots.header" class="mb-4 ms-0 sm:ms-8 mt-5">
+                        <slot name="header" />
+                    </div>
                     <slot />
                 </div>
             </main>

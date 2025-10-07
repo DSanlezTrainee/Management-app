@@ -11,14 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-       Schema::create('entities', function (Blueprint $table) {
+        Schema::create('entities', function (Blueprint $table) {
             $table->id();
-            $table->enum('type', ['client', 'supplier']); 
-            $table->unsignedBigInteger('number')->unique(); 
-            $table->string('nif')->unique(); 
+            $table->enum('type', ['client', 'supplier']);
+            $table->unsignedBigInteger('number')->unique();
+            $table->string('nif')->unique();
             $table->string('name');
             $table->string('address')->nullable();
-            $table->string('postal_code', 8)->nullable(); 
+            $table->string('postal_code', 64)->nullable();
             $table->string('city')->nullable();
             $table->foreignId('country_id')->constrained('countries');
             $table->string('phone')->nullable();
