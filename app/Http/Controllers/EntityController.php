@@ -67,18 +67,25 @@ class EntityController extends Controller
      */
     public function store(Request $request)
     {
-        // Verificação personalizada para NIFs duplicados
+        // Verification personalized for duplicate NIFs
         if (Entity::nifExists($request->input('nif'))) {
             return back()->withErrors(['nif' => 'The NIF has already been taken.'])->withInput();
         }
 
+        $country = Country::find($request->input('country_id'));
         $validated = $request->validate([
             'type' => 'required|in:client,supplier,both',
-            'nif' => ['required', 'string', function ($attribute, $value, $fail) {
-                if (!preg_match('/^[1|2|3|5|6|8|9][0-9]{8}$/', $value)) {
-                    $fail('NIF must have 9 digits and start with 1,2,3,5,6,8 or 9.');
+            'nif' => [
+                'required',
+                'string',
+                function ($attribute, $value, $fail) use ($country) {
+                    if ($country && strtoupper($country->code) === 'PT') {
+                        if (!preg_match('/^[1|2|3|5|6|8|9][0-9]{8}$/', $value)) {
+                            $fail('NIF must start with 1,2,3,5,6,8 or 9 and have 9 digits.');
+                        }
+                    }
                 }
-            }],
+            ],
             'name' => 'required|string',
             'country_id' => 'required|exists:countries,id',
             'email' => 'nullable|email',
@@ -98,14 +105,14 @@ class EntityController extends Controller
 
         $entity = Entity::create($validated);
 
-        // Redirecionar para a URL armazenada na sessão, ou para a lista padrão se não existir
+        // Redirects for a stored URL in the session, or to the default list if it doesn't exist
         $redirectUrl = session('entity_create_referer');
         if ($redirectUrl) {
             session()->forget('entity_create_referer');
             return redirect($redirectUrl)->with('success', 'Entity created successfully!');
         }
 
-        // Fallback: redirecionar com base no tipo da entidade
+        // Fallback: redirect based on the entity type
         if ($entity->type === 'client' || $entity->type === 'both') {
             return redirect()->route('entities.clients')->with('success', 'Entity created successfully!');
         } else {
@@ -144,14 +151,22 @@ class EntityController extends Controller
             return back()->withErrors(['nif' => 'The NIF has already been taken.'])->withInput();
         }
 
+        $country = Country::find($request->input('country_id'));
         $validated = $request->validate([
             'type' => 'required|in:client,supplier,both',
             'number' => 'required|integer|unique:entities,number,' . $entity->id,
-            'nif' => ['required', 'string', function ($attribute, $value, $fail) {
-                if (!preg_match('/^[1|2|3|5|6|8|9][0-9]{8}$/', $value)) {
-                    $fail('NIF must have 9 digits and start with 1,2,3,5,6,8 or 9.');
+            'nif' => [
+                'required',
+                'string',
+                function ($attribute, $value, $fail) use ($country) {
+                    if ($country && strtoupper($country->code) === 'PT') {
+                        if (!preg_match('/^[1|2|3|5|6|8|9][0-9]{8}$/', $value)) {
+                            $fail('NIF deve ter 9 dígitos e começar por 1,2,3,5,6,8 ou 9.');
+                        }
+                    }
+                    // Para outros países, apenas required|string (sem regex específica)
                 }
-            }],
+            ],
             'name' => 'required|string',
             'country_id' => 'required|exists:countries,id',
             'email' => 'nullable|email',

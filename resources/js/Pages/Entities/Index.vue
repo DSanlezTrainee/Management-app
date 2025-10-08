@@ -5,7 +5,7 @@ import { Link, router } from "@inertiajs/vue3";
 import DataTable from "@/Components/ui/table/DataTable.vue";
 
 defineProps({
-    entities: Array,
+    entities: Object,
     type: String,
 });
 

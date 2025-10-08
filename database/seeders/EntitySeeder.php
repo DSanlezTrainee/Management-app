@@ -15,10 +15,10 @@ class EntitySeeder extends Seeder
         $entities = [
             [
                 'type' => 'client',
-                'number' => 1001,
+                'number' => 1,
                 'nif' => '123456789',
                 'name' => 'Empresa Alpha',
-                'country_id' => 1, 
+                'country_id' => 1,
                 'email' => 'alpha@example.com',
                 'address' => 'Rua Principal 1',
                 'city' => 'Lisboa',
@@ -32,10 +32,10 @@ class EntitySeeder extends Seeder
             ],
             [
                 'type' => 'supplier',
-                'number' => 2001,
+                'number' => 2,
                 'nif' => '234567891',
                 'name' => 'Fornecedor Beta',
-                'country_id' => 2, 
+                'country_id' => 2,
                 'email' => 'beta@fornecedor.com',
                 'address' => 'Avenida Central 99',
                 'city' => 'Madrid',
