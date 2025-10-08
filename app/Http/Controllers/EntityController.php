@@ -128,8 +128,10 @@ class EntityController extends Controller
      */
     public function edit(Entity $entity)
     {
+        $countries = Country::orderBy('name')->get(['id', 'name', 'code']);
         return Inertia::render('Entities/Edit', [
-            'entity' => $entity->load('country')
+            'entity' => $entity->load('country'),
+            'countries' => $countries
         ]);
     }
 
@@ -200,57 +202,32 @@ class EntityController extends Controller
         $countryCode = strtoupper($request->input('country_code'));
         $vatNumber = preg_replace('/\D/', '', $request->input('vat_number'));
 
-        Log::info('VIES REST lookup request', [
-            'country_code' => $countryCode,
-            'vat_number' => $vatNumber,
-        ]);
-
         try {
-            $endpoint = 'https://ec.europa.eu/taxation_customs/vies/rest-api//check-vat-number'; // duas barras
+            $endpoint = 'https://ec.europa.eu/taxation_customs/vies/rest-api//check-vat-number';
             $payload = [
                 'countryCode' => $countryCode,
                 'vatNumber' => $vatNumber,
             ];
-            Log::info('VIES REST request', [
-                'endpoint' => $endpoint,
-                'payload' => $payload
-            ]);
             $response = \Illuminate\Support\Facades\Http::timeout(10)
                 ->acceptJson()
                 ->post($endpoint, $payload);
 
-            Log::info('VIES REST raw response', [
-                'status' => $response->status(),
-                'body' => $response->body()
-            ]);
-
             $data = $response->json();
-
-            // Se a resposta do VIES foi recebida, devolve sempre 200
             if ($response->ok() && isset($data['valid'])) {
                 return response()->json([
                     'valid' => $data['valid'],
                     'name' => $data['name'] ?? ($data['traderName'] ?? ''),
                     'address' => $data['address'] ?? ($data['traderAddress'] ?? ''),
-                    'raw' => $data,
                 ]);
             } else {
-                // Se o VIES respondeu mas não tem campo 'valid', devolve erro genérico mas status 200
                 return response()->json([
                     'valid' => false,
                     'message' => $data['message'] ?? 'Erro desconhecido na resposta do VIES',
-                    'status' => $response->status(),
-                    'body' => $response->body(),
                 ]);
             }
         } catch (\Exception $e) {
-            Log::error('VIES REST lookup error', [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
             return response()->json([
                 'error' => 'Serviço VIES indisponível. Tente novamente mais tarde.',
-                'details' => $e->getMessage(),
             ], 503);
         }
     }

@@ -1,6 +1,6 @@
 <script setup>
 import AppLayout from "@/Layouts/AppLayout.vue";
-import { Link } from "@inertiajs/vue3";
+import { Link, router } from "@inertiajs/vue3";
 
 import DataTable from "@/Components/ui/table/DataTable.vue";
 
@@ -8,6 +8,12 @@ defineProps({
     entities: Array,
     type: String,
 });
+
+function deleteEntity(id) {
+    if (confirm("Are you sure you want to delete this entity?")) {
+        router.delete(route("entities.destroy", id));
+    }
+}
 </script>
 
 <template>
@@ -81,6 +87,12 @@ defineProps({
                         class="text-yellow-600 hover:underline mr-2"
                         >Edit</Link
                     >
+                    <button
+                        @click.prevent="deleteEntity(row.id)"
+                        class="text-red-600 hover:underline mr-2"
+                    >
+                        Delete
+                    </button>
                 </template>
             </DataTable>
         </div>

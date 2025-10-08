@@ -96,8 +96,9 @@ async function lookupVIES() {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "X-CSRF-TOKEN": document.querySelector("meta[name=csrf-token]")
-                    .content,
+                "X-CSRF-TOKEN":
+                    document.querySelector("meta[name=csrf-token]")?.content ||
+                    "",
             },
             body: JSON.stringify({
                 country_code: country.code,
@@ -108,11 +109,9 @@ async function lookupVIES() {
         try {
             data = await response.json();
         } catch (jsonErr) {
-            console.error("Erro ao fazer parse do JSON do VIES:", jsonErr);
-            viesError.value = "Erro ao processar resposta do VIES.";
+            viesError.value = "Error processing VIES response.";
             return;
         }
-        console.log("Resposta VIES:", data);
         if (data.valid) {
             form.name = data.name;
             form.address = data.address;
@@ -125,7 +124,6 @@ async function lookupVIES() {
             viesError.value = "NIF not found or not valid in VIES.";
         }
     } catch (e) {
-        console.error("Erro na chamada VIES:", e);
         viesError.value = "VIES service unavailable.";
     } finally {
         loadingVies.value = false;
@@ -133,7 +131,6 @@ async function lookupVIES() {
 }
 
 function submit() {
-    console.log("Submitting form with values:", form.data());
 
     form.post(route("entities.store"), {
         onSuccess: () => {
@@ -165,7 +162,7 @@ onMounted(() => {
         </template>
         <div class="py-6 max-w-3xl mx-auto">
             <form @submit.prevent="submit">
-                <!-- Erros aparecem apenas debaixo do campo correspondente -->
+
                 <div
                     class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 items-start"
                 >
@@ -198,7 +195,6 @@ onMounted(() => {
                                         </Select>
                                     </div>
                                 </FormControl>
-                                <!-- Exibir mensagens de erro -->
                                 <p
                                     v-if="
                                         form.errors.type || backendErrors.type
