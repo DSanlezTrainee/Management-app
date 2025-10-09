@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
             CountrySeeder::class,
             EntitySeeder::class,
             ContactFunctionSeeder::class,
+            VatRateSeeder::class
         ]);
     }
 }

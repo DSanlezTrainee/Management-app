@@ -4,8 +4,19 @@ use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\VatRateController;
 
 Route::middleware(['auth'])->group(function () {
+
+    //VatRates
+
+    Route::get('/vatRates', [VatRateController::class, 'index'])->name('var-rates.index');
+    Route::get('/vatRates/create', [VatRateController::class, 'create'])->name('vat-rates.create');
+    Route::post('/vatRates', [VatRateController::class, 'store'])->name('vat-rates.store');
+    Route::get('/vatRates/{vatRate}', [VatRateController::class, 'show'])->name('vat-rates.show');
+    Route::get('/vatRates/{vatRate}/edit', [VatRateController::class, 'edit'])->name('vat-rates.edit');
+    Route::put('/vatRates/{vatRate}', [VatRateController::class, 'update'])->name('vat-rates.update');
+    Route::delete('/vatRates/{vatRate}', [VatRateController::class, 'destroy'])->name('vat-rates.destroy');
 
     //Contact routes
     Route::get('/contacts', [ContactController::class, 'index'])->name('contacts.index');
@@ -14,7 +25,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/contacts/{contact}', [ContactController::class, 'show'])->name('contacts.show');
     Route::get('/contacts/{contact}/edit', [ContactController::class, 'edit'])->name('contacts.edit');
     Route::put('/contacts/{contact}', [ContactController::class, 'update'])->name('contacts.update');
-
     Route::delete('/contacts/{contact}', [ContactController::class, 'destroy'])->name('contacts.destroy');
 
     // Clients and Suppliers filtered views
