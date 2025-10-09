@@ -131,7 +131,6 @@ async function lookupVIES() {
 }
 
 function submit() {
-
     form.post(route("entities.store"), {
         onSuccess: () => {
             console.log("Form submitted successfully!");
@@ -162,7 +161,6 @@ onMounted(() => {
         </template>
         <div class="py-6 max-w-3xl mx-auto">
             <form @submit.prevent="submit">
-
                 <div
                     class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 items-start"
                 >
@@ -279,6 +277,7 @@ onMounted(() => {
                                     <TextInput
                                         v-model="form.address"
                                         class="w-full"
+                                        required
                                     />
                                 </FormControl>
                                 <p
@@ -305,6 +304,7 @@ onMounted(() => {
                                         v-model="form.postal_code"
                                         placeholder="1234-567"
                                         class="w-full"
+                                        required
                                     />
                                 </FormControl>
                                 <p
@@ -330,6 +330,7 @@ onMounted(() => {
                                     <TextInput
                                         v-model="form.city"
                                         class="w-full"
+                                        required
                                     />
                                 </FormControl>
                                 <p
@@ -362,6 +363,7 @@ onMounted(() => {
                                                     v-for="country in props.countries"
                                                     :key="country.id"
                                                     :value="country.id"
+                                                    required
                                                 >
                                                     {{ country.name }}
                                                 </SelectItem>
@@ -415,6 +417,7 @@ onMounted(() => {
                                     <TextInput
                                         v-model="form.mobile"
                                         class="w-full"
+                                        required
                                     />
                                 </FormControl>
                                 <p
@@ -466,6 +469,7 @@ onMounted(() => {
                                         v-model="form.email"
                                         type="email"
                                         class="w-full"
+                                        required
                                     />
                                 </FormControl>
                                 <p
@@ -487,7 +491,7 @@ onMounted(() => {
                                 <FormLabel>Status</FormLabel>
                                 <FormControl>
                                     <div class="w-full relative">
-                                        <Select v-model="form.status">
+                                        <Select v-model="form.status" required>
                                             <SelectTrigger
                                                 class="w-full bg-white"
                                             >

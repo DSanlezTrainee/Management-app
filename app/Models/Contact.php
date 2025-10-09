@@ -21,15 +21,13 @@ class Contact extends Model
     ];
 
     protected $casts = [
-        'number' => 'encrypted',
         'first_name' => 'encrypted',
         'last_name' => 'encrypted',
         'email' => 'encrypted',
         'phone' => 'encrypted',
         'mobile' => 'encrypted',
         'notes' => 'encrypted',
-        'rgpd_consent' => 'encrypted',
-        'status' => 'encrypted',
+        'rgpd_consent' => 'boolean',
     ];
 
     public function entity()

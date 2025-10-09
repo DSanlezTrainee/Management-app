@@ -88,15 +88,15 @@ class EntityController extends Controller
             ],
             'name' => 'required|string',
             'country_id' => 'required|exists:countries,id',
-            'email' => 'nullable|email',
-            'address' => 'nullable|string',
-            'city' => 'nullable|string',
+            'email' => 'required|email',
+            'address' => 'required|string',
+            'city' => 'required|string',
             'phone' => 'nullable|string',
-            'mobile' => 'nullable|string',
+            'mobile' => 'required|string',
             'website' => 'nullable|url',
             'rgpd_consent' => 'required|boolean',
             'notes' => 'nullable|string',
-            'postal_code' => 'nullable|regex:/^\d{4}-\d{3}$/',
+            'postal_code' => 'required|regex:/^\d{4}-\d{3}$/',
             'status' => 'required|in:active,inactive',
         ]);
 
@@ -172,13 +172,16 @@ class EntityController extends Controller
             'email' => 'nullable|email',
             'address' => 'nullable|string',
             'city' => 'nullable|string',
-            'phone' => 'nullable|string',
-            'mobile' => 'nullable|string',
+            'phone' => ['nullable', 'regex:/^\\d+$/'],
+            'mobile' => ['required', 'regex:/^\\d+$/'],
             'website' => 'nullable|url',
             'rgpd_consent' => 'required|boolean',
             'notes' => 'nullable|string',
             'postal_code' => 'nullable|regex:/^\d{4}-\d{3}$/',
             'status' => 'required|in:active,inactive',
+        ], [
+            'phone.regex' => 'phone number must contain only numbers.',
+            'mobile.regex' => 'mobile number must contain only numbers.',
         ]);
 
         $entity->update($validated);

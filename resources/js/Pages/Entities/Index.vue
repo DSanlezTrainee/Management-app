@@ -40,12 +40,12 @@ function deleteEntity(id) {
             </h2>
         </template>
         <div class="py-6">
-            <div class="mb-10 flex justify-end">
+            <div class="mb-10 flex justify-end sm:justify-end">
                 <Link
                     :href="
                         route('entities.create') + (type ? `?type=${type}` : '')
                     "
-                    class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                    class="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
                 >
                     New
                     {{
@@ -59,16 +59,48 @@ function deleteEntity(id) {
             </div>
             <DataTable
                 :columns="[
-                    { key: 'nif', label: 'NIF' },
+                    { key: 'nif', label: 'NIF', class: 'hidden xs:table-cell' },
                     { key: 'name', label: 'Name' },
-                    { key: 'address', label: 'Address' },
-                    { key: 'postal_code', label: 'Postal Code' },
-                    { key: 'city', label: 'City' },
-                    { key: 'country', label: 'Country' },
-                    { key: 'phone', label: 'Phone' },
-                    { key: 'mobile', label: 'Mobile' },
-                    { key: 'website', label: 'Website' },
-                    { key: 'email', label: 'Email' },
+                    {
+                        key: 'address',
+                        label: 'Address',
+                        class: 'hidden md:table-cell',
+                    },
+                    {
+                        key: 'postal_code',
+                        label: 'Postal Code',
+                        class: 'hidden md:table-cell',
+                    },
+                    {
+                        key: 'city',
+                        label: 'City',
+                        class: 'hidden sm:table-cell',
+                    },
+                    {
+                        key: 'country',
+                        label: 'Country',
+                        class: 'hidden sm:table-cell',
+                    },
+                    {
+                        key: 'phone',
+                        label: 'Phone',
+                        class: 'hidden lg:table-cell',
+                    },
+                    {
+                        key: 'mobile',
+                        label: 'Mobile',
+                        class: 'hidden lg:table-cell',
+                    },
+                    {
+                        key: 'website',
+                        label: 'Website',
+                        class: 'hidden xl:table-cell',
+                    },
+                    {
+                        key: 'email',
+                        label: 'Email',
+                        class: 'hidden xl:table-cell',
+                    },
                     { key: 'actions', label: 'Actions' },
                 ]"
                 :data="entities.data"
@@ -77,22 +109,26 @@ function deleteEntity(id) {
                     {{ row.country?.name || "-" }}
                 </template>
                 <template #cell-actions="{ row }">
-                    <Link
-                        :href="route('entities.show', row.id)"
-                        class="text-blue-600 hover:underline mr-2"
-                        >View</Link
+                    <div
+                        class="flex flex-col sm:flex-row items-start sm:items-center gap-1 sm:gap-2"
                     >
-                    <Link
-                        :href="route('entities.edit', row.id)"
-                        class="text-yellow-600 hover:underline mr-2"
-                        >Edit</Link
-                    >
-                    <button
-                        @click.prevent="deleteEntity(row.id)"
-                        class="text-red-600 hover:underline mr-2"
-                    >
-                        Delete
-                    </button>
+                        <Link
+                            :href="route('entities.show', row.id)"
+                            class="text-blue-600 hover:underline"
+                            >View</Link
+                        >
+                        <Link
+                            :href="route('entities.edit', row.id)"
+                            class="text-yellow-600 hover:underline"
+                            >Edit</Link
+                        >
+                        <button
+                            @click.prevent="deleteEntity(row.id)"
+                            class="text-red-600 hover:underline"
+                        >
+                            Delete
+                        </button>
+                    </div>
                 </template>
             </DataTable>
         </div>
