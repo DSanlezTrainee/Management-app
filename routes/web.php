@@ -10,7 +10,7 @@ Route::middleware(['auth'])->group(function () {
 
     //VatRates
 
-    Route::get('/vatRates', [VatRateController::class, 'index'])->name('var-rates.index');
+    Route::get('/vatRates', [VatRateController::class, 'index'])->name('vat-rates.index');
     Route::get('/vatRates/create', [VatRateController::class, 'create'])->name('vat-rates.create');
     Route::post('/vatRates', [VatRateController::class, 'store'])->name('vat-rates.store');
     Route::get('/vatRates/{vatRate}', [VatRateController::class, 'show'])->name('vat-rates.show');

@@ -1,7 +1,7 @@
 <script setup>
 import AppLayout from "@/Layouts/AppLayout.vue";
 import TextInput from "@/Components/TextInput.vue";
-import { useForm, usePage } from "@inertiajs/vue3";
+import { useForm } from "@inertiajs/vue3";
 import {
     FormField,
     FormItem,
@@ -15,9 +15,6 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/Components/ui/select";
-
-const page = usePage();
-const backendErrors = page.props.errors || {};
 
 const props = defineProps({
     contact: Object,
@@ -60,16 +57,10 @@ function submit() {
                             />
                         </FormControl>
                         <p
-                            v-if="
-                                form.errors.first_name ||
-                                backendErrors.first_name
-                            "
+                            v-if="form.errors.first_name"
                             class="text-sm text-red-600 mt-1"
                         >
-                            {{
-                                form.errors.first_name ||
-                                backendErrors.first_name
-                            }}
+                            {{ form.errors.first_name }}
                         </p>
                     </FormItem>
                 </FormField>
@@ -84,14 +75,10 @@ function submit() {
                             />
                         </FormControl>
                         <p
-                            v-if="
-                                form.errors.last_name || backendErrors.last_name
-                            "
+                            v-if="form.errors.last_name"
                             class="text-sm text-red-600 mt-1"
                         >
-                            {{
-                                form.errors.last_name || backendErrors.last_name
-                            }}
+                            {{ form.errors.last_name }}
                         </p>
                     </FormItem>
                 </FormField>
@@ -119,14 +106,10 @@ function submit() {
                             </div>
                         </FormControl>
                         <p
-                            v-if="
-                                form.errors.entity_id || backendErrors.entity_id
-                            "
+                            v-if="form.errors.entity_id"
                             class="text-sm text-red-600 mt-1"
                         >
-                            {{
-                                form.errors.entity_id || backendErrors.entity_id
-                            }}
+                            {{ form.errors.entity_id }}
                         </p>
                     </FormItem>
                 </FormField>
@@ -157,16 +140,10 @@ function submit() {
                             </div>
                         </FormControl>
                         <p
-                            v-if="
-                                form.errors.contact_function_id ||
-                                backendErrors.contact_function_id
-                            "
+                            v-if="form.errors.contact_function_id"
                             class="text-sm text-red-600 mt-1"
                         >
-                            {{
-                                form.errors.contact_function_id ||
-                                backendErrors.contact_function_id
-                            }}
+                            {{ form.errors.contact_function_id }}
                         </p>
                     </FormItem>
                 </FormField>
@@ -177,10 +154,10 @@ function submit() {
                             <TextInput v-model="form.phone" class="w-full" />
                         </FormControl>
                         <p
-                            v-if="form.errors.phone || backendErrors.phone"
+                            v-if="form.errors.phone"
                             class="text-sm text-red-600 mt-1"
                         >
-                            {{ form.errors.phone || backendErrors.phone }}
+                            {{ form.errors.phone }}
                         </p>
                     </FormItem>
                 </FormField>
@@ -191,10 +168,10 @@ function submit() {
                             <TextInput v-model="form.mobile" class="w-full" />
                         </FormControl>
                         <p
-                            v-if="form.errors.mobile || backendErrors.mobile"
+                            v-if="form.errors.mobile"
                             class="text-sm text-red-600 mt-1"
                         >
-                            {{ form.errors.mobile || backendErrors.mobile }}
+                            {{ form.errors.mobile }}
                         </p>
                     </FormItem>
                 </FormField>
@@ -209,10 +186,10 @@ function submit() {
                             />
                         </FormControl>
                         <p
-                            v-if="form.errors.email || backendErrors.email"
+                            v-if="form.errors.email"
                             class="text-sm text-red-600 mt-1"
                         >
-                            {{ form.errors.email || backendErrors.email }}
+                            {{ form.errors.email }}
                         </p>
                     </FormItem>
                 </FormField>
@@ -239,10 +216,10 @@ function submit() {
                             </div>
                         </FormControl>
                         <p
-                            v-if="form.errors.status || backendErrors.status"
+                            v-if="form.errors.status"
                             class="text-sm text-red-600 mt-1"
                         >
-                            {{ form.errors.status || backendErrors.status }}
+                            {{ form.errors.status }}
                         </p>
                     </FormItem>
                 </FormField>
@@ -256,10 +233,10 @@ function submit() {
                             ></textarea>
                         </FormControl>
                         <p
-                            v-if="form.errors.notes || backendErrors.notes"
+                            v-if="form.errors.notes"
                             class="text-sm text-red-600 mt-1"
                         >
-                            {{ form.errors.notes || backendErrors.notes }}
+                            {{ form.errors.notes }}
                         </p>
                     </FormItem>
                 </FormField>
@@ -276,16 +253,10 @@ function submit() {
                             />
                         </FormControl>
                         <p
-                            v-if="
-                                form.errors.rgpd_consent ||
-                                backendErrors.rgpd_consent
-                            "
+                            v-if="form.errors.rgpd_consent"
                             class="text-sm text-red-600 mt-1"
                         >
-                            {{
-                                form.errors.rgpd_consent ||
-                                backendErrors.rgpd_consent
-                            }}
+                            {{ form.errors.rgpd_consent }}
                         </p>
                     </FormItem>
                 </FormField>

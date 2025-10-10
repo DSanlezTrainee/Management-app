@@ -21,14 +21,14 @@ class VatRateController extends Controller
 
     public function create()
     {
-        return Inertia::render('Vat-rates/Create');
+        return Inertia::render('VatRates/Create');
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'rate' => 'requited|numeric|min:0|max:100',
+            'rate' => 'required|numeric|min:0|max:100',
             'active' => 'required|boolean',
         ]);
 

@@ -48,12 +48,9 @@ const alignmentClasses = computed(() => {
 
 <template>
     <div class="relative" @mouseenter="open = true" @mouseleave="open = false">
-        <div @click="open = !open">
+        <div>
             <slot name="trigger" />
         </div>
-
-        <!-- Full Screen Dropdown Overlay -->
-        <div v-show="open" class="fixed inset-0 z-40" @click="open = false" />
 
         <transition
             enter-active-class="transition ease-out duration-200"
