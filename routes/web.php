@@ -3,13 +3,23 @@
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
+use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\VatRateController;
 
 Route::middleware(['auth'])->group(function () {
 
-    //VatRates
+    // Articles routes
+    Route::get('/articles', [ArticleController::class, 'index'])->name('articles.index');
+    Route::get('/articles/create', [ArticleController::class, 'create'])->name('articles.create');
+    Route::post('/articles', [ArticleController::class, 'store'])->name('articles.store');
+    Route::get('/articles/{article}', [ArticleController::class, 'show'])->name('articles.show');
+    Route::get('/articles/{article}/edit', [ArticleController::class, 'edit'])->name('articles.edit');
+    Route::put('/articles/{article}', [ArticleController::class, 'update'])->name('articles.update');
+    Route::delete('/articles/{article}', [ArticleController::class, 'destroy'])->name('articles.destroy');
 
+
+    //VatRates
     Route::get('/vatRates', [VatRateController::class, 'index'])->name('vat-rates.index');
     Route::get('/vatRates/create', [VatRateController::class, 'create'])->name('vat-rates.create');
     Route::post('/vatRates', [VatRateController::class, 'store'])->name('vat-rates.store');

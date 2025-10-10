@@ -134,6 +134,12 @@ const logout = () => {
                         <template #content>
                             <div class="flex flex-col gap-1 min-w-[140px]">
                                 <DropdownLink
+                                    :href="route('articles.index')"
+                                    :active="route().current('articles.index')"
+                                >
+                                    Articles
+                                </DropdownLink>
+                                <DropdownLink
                                     :href="route('vat-rates.index')"
                                     :active="route().current('vat-rates.index')"
                                 >
@@ -141,19 +147,13 @@ const logout = () => {
                                 </DropdownLink>
                                 <DropdownLink
                                     :href="route('vat-rates.index')"
-                                    :active="
-                                        route().current(
-                                            'vat-rates.index',
-                                        )
-                                    "
+                                    :active="route().current('vat-rates.index')"
                                 >
                                     Contact: Functions
                                 </DropdownLink>
                                 <DropdownLink
                                     :href="route('vat-rates.index')"
-                                    :active="
-                                        route().current('vat-rates.index')
-                                    "
+                                    :active="route().current('vat-rates.index')"
                                 >
                                     Finance:Vat Rates
                                 </DropdownLink>

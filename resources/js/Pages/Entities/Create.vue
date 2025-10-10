@@ -82,6 +82,14 @@ const loadingVies = ref(false);
 const viesError = ref("");
 const nameInput = ref(null);
 
+function handleBack() {
+    if (typeRef.value === "supplier") {
+        router.visit("/suppliers");
+    } else {
+        router.visit("/clients");
+    }
+}
+
 async function lookupVIES() {
     viesError.value = "";
     if (!form.nif || !form.country_id) return;
@@ -552,7 +560,16 @@ onMounted(() => {
                         </FormField>
                     </div>
                 </div>
-                <div class="col-span-1 md:col-span-2 mt-8 flex justify-end">
+                <div
+                    class="col-span-1 md:col-span-2 mt-8 space-x-2 flex justify-end"
+                >
+                    <button
+                        type="button"
+                        class="px-6 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 transition"
+                        @click="handleBack"
+                    >
+                        Cancel
+                    </button>
                     <button
                         type="submit"
                         class="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"

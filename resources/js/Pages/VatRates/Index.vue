@@ -38,6 +38,9 @@ function deleteVatRate(id) {
                     {{ row.active ? "Yes" : "No" }}
                 </span>
             </template>
+            <template #cell-rate="{ row }">
+                {{ parseFloat(row.rate) }}%
+            </template>
             <template #cell-actions="{ row }">
                 <div
                     class="flex flex-col sm:flex-row items-start sm:items-center gap-1 sm:gap-2"
