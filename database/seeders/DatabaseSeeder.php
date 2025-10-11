@@ -6,6 +6,8 @@ use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
+use function Laravel\Prompts\progress;
+
 class DatabaseSeeder extends Seeder
 {
     /**
@@ -26,6 +28,7 @@ class DatabaseSeeder extends Seeder
             ContactFunctionSeeder::class,
             VatRateSeeder::class,
             ArticleSeeder::class,
+            ProposalSeeder::class,
         ]);
     }
 }

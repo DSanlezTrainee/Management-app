@@ -9,6 +9,18 @@ use App\Http\Controllers\VatRateController;
 
 Route::middleware(['auth'])->group(function () {
 
+    Route::get('/proposals/{proposal}/pdf', [App\Http\Controllers\ProposalController::class, 'pdf'])->name('proposals.pdf');
+
+    // Proposals routes
+    Route::get('/proposals', [App\Http\Controllers\ProposalController::class, 'index'])->name('proposals.index');
+    Route::get('/proposals/create', [App\Http\Controllers\ProposalController::class, 'create'])->name('proposals.create');
+    Route::post('/proposals', [App\Http\Controllers\ProposalController::class, 'store'])->name('proposals.store');
+    Route::get('/proposals/{proposal}', [App\Http\Controllers\ProposalController::class, 'show'])->name('proposals.show');
+    Route::get('/proposals/{proposal}/edit', [App\Http\Controllers\ProposalController::class, 'edit'])->name('proposals.edit');
+    Route::put('/proposals/{proposal}', [App\Http\Controllers\ProposalController::class, 'update'])->name('proposals.update');
+    Route::delete('/proposals/{proposal}', [App\Http\Controllers\ProposalController::class, 'destroy'])->name('proposals.destroy');
+    Route::post('/proposals/{proposal}/convert-to-order', [App\Http\Controllers\ProposalController::class, 'convertToOrder'])->name('proposals.convertToOrder');
+
     // Articles routes
     Route::get('/articles', [ArticleController::class, 'index'])->name('articles.index');
     Route::get('/articles/create', [ArticleController::class, 'create'])->name('articles.create');
@@ -52,6 +64,10 @@ Route::middleware(['auth'])->group(function () {
 
     // VIES lookup route
     Route::post('/entities/vies-lookup', [App\Http\Controllers\EntityController::class, 'viesLookup']);
+});
+
+Route::middleware(['auth'])->group(function () {
+    Route::resource('proposals', App\Http\Controllers\ProposalController::class);
 });
 
 

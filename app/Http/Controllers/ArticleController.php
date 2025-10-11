@@ -6,8 +6,7 @@ use Inertia\Inertia;
 use App\Models\Article;
 use App\Models\VatRate;
 use Illuminate\Http\Request;
-use PhpParser\Node\Stmt\TryCatch;
-use Illuminate\Validation\ValidationException;
+
 
 class ArticleController extends Controller
 {
@@ -40,33 +39,27 @@ class ArticleController extends Controller
      */
     public function store(Request $request)
     {
-        try {
-            $validated = $request->validate([
-                'reference' => 'required|unique:articles,reference',
-                'name' => 'required|string|max:255',
-                'description' => 'nullable|string',
-                'price' => 'required|numeric|min:0',
-                'vat_rate_id' => 'required|exists:vat_rates,id',
-                'photo' => 'nullable|image|max:2048',
-                'notes' => 'nullable|string',
-                'status' => 'required|in:active,inactive',
-            ]);
+        $validated = $request->validate([
+            'reference' => 'required|unique:articles,reference',
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'price' => 'required|numeric|min:0',
+            'vat_rate_id' => 'required|exists:vat_rates,id',
+            'photo' => 'nullable|image|max:2048',
+            'notes' => 'nullable|string',
+            'status' => 'required|in:active,inactive',
+        ]);
 
-            if (!($vatRate = VatRate::find($validated['vat_rate_id']))) {
-                return redirect()->back()->withErrors(['vat_rate_id' => 'VAT rate not found.']);
-            }
-
-            $priceWithVat = $validated['price'] * (1 + ($vatRate->rate / 100));
-            $validated['price_with_vat'] = round($priceWithVat, 2);
-
-            Article::create($validated);
-
-            return redirect()->route('articles.index')->with('success', 'Article created successfully.');
-        } catch (ValidationException $e) {
-            throw $e;
-        } catch (\Exception $e) {
-            return redirect()->back()->with(['error' => 'An error occurred while creating the article. ' . $e->getMessage()]);
+        if (!($vatRate = VatRate::find($validated['vat_rate_id']))) {
+            return redirect()->back()->withErrors(['vat_rate_id' => 'VAT rate not found.']);
         }
+
+        $priceWithVat = $validated['price'] * (1 + ($vatRate->rate / 100));
+        $validated['price_with_vat'] = round($priceWithVat, 2);
+
+        Article::create($validated);
+
+        return redirect()->route('articles.index')->with('success', 'Article created successfully.');
     }
 
     /**
@@ -98,33 +91,27 @@ class ArticleController extends Controller
      */
     public function update(Request $request, Article $article)
     {
-        try {
-            $validated = $request->validate([
-                'reference' => 'required|string|max:255|unique:articles,reference,' . $article->id,
-                'name' => 'required|string|max:255',
-                'description' => 'nullable|string',
-                'price' => 'required|numeric|min:0',
-                'vat_rate_id' => 'required|exists:vat_rates,id',
-                'photo' => 'nullable|string',
-                'notes' => 'nullable|string',
-                'status' => 'required|in:active,inactive',
-            ]);
+        $validated = $request->validate([
+            'reference' => 'required|string|max:255|unique:articles,reference,' . $article->id,
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'price' => 'required|numeric|min:0',
+            'vat_rate_id' => 'required|exists:vat_rates,id',
+            'photo' => 'nullable|string',
+            'notes' => 'nullable|string',
+            'status' => 'required|in:active,inactive',
+        ]);
 
-            if (!($vatRate = VatRate::find($validated['vat_rate_id']))) {
-                return redirect()->back()->with(['vat_rate_id' => 'VAT rate not found.']);
-            }
-
-            $priceWithVat = $validated['price'] * (1 + ($vatRate->rate / 100));
-            $validated['price_with_vat'] = round($priceWithVat, 2);
-
-            $article->update($validated);
-
-            return redirect()->route('articles.index')->with('success', 'Article updated successfully!');
-        } catch (ValidationException $e) {
-            throw $e;
-        } catch (\Exception $e) {
-            return redirect()->back()->with(['error' => 'Error updating article: ' . $e->getMessage()]);
+        if (!($vatRate = VatRate::find($validated['vat_rate_id']))) {
+            return redirect()->back()->with(['vat_rate_id' => 'VAT rate not found.']);
         }
+
+        $priceWithVat = $validated['price'] * (1 + ($vatRate->rate / 100));
+        $validated['price_with_vat'] = round($priceWithVat, 2);
+
+        $article->update($validated);
+
+        return redirect()->route('articles.index')->with('success', 'Article updated successfully!');
     }
 
     /**
@@ -132,11 +119,7 @@ class ArticleController extends Controller
      */
     public function destroy(Article $article)
     {
-        try {
-            $article->delete();
-            return redirect()->route('articles.index')->with('success', 'Article deleted successfully!');
-        } catch (\Exception $e) {
-            return redirect()->back()->with(['error' => 'Error deleting article: ' . $e->getMessage()]);
-        }
+        $article->delete();
+        return redirect()->route('articles.index')->with('success', 'Article deleted successfully!');
     }
 }

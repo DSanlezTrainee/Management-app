@@ -108,6 +108,12 @@ const logout = () => {
                     >
                         Contacts
                     </NavLink>
+                    <NavLink
+                        :href="route('proposals.index')"
+                        :active="route().current('proposals.index')"
+                    >
+                        Proposals
+                    </NavLink>
                     <Dropdown align="left" width="48">
                         <template #trigger>
                             <button
