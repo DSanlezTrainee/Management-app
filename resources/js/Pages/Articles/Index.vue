@@ -2,19 +2,49 @@
 import AppLayout from "@/Layouts/AppLayout.vue";
 import { Link, router, usePage } from "@inertiajs/vue3";
 import DataTable from "@/Components/ui/table/DataTable.vue";
+import { ref, watch, onMounted } from "vue";
 
 const props = defineProps({
     articles: Object,
     vatRates: Array,
 });
 
+const page = usePage();
 const { errors } = usePage().props;
+const showFlash = ref(false);
 
 function deleteArticle(id) {
     if (confirm("Are you sure you want to delete this article?")) {
         router.delete(route("articles.destroy", id));
     }
 }
+
+function startFlashTimer() {
+    showFlash.value = true;
+    setTimeout(() => {
+        showFlash.value = false;
+    }, 2000);
+}
+
+onMounted(() => {
+    if (
+        page.props.flash &&
+        (page.props.flash.success || page.props.flash.error)
+    ) {
+        startFlashTimer();
+    }
+});
+
+// Watch for changes in flash messages
+watch(
+    () => page.props.flash,
+    (newFlash) => {
+        if (newFlash && (newFlash.success || newFlash.error)) {
+            startFlashTimer();
+        }
+    },
+    { deep: true },
+);
 </script>
 
 <template>
@@ -25,6 +55,22 @@ function deleteArticle(id) {
             >
                 Articles
             </h2>
+            <div
+                v-if="showFlash && page.props.flash && page.props.flash.success"
+                class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded fixed top-24 right-4 z-50 shadow-lg"
+                style="max-width: 300px"
+            >
+                <span class="font-medium">Success!</span>
+                {{ page.props.flash.success }}
+            </div>
+            <div
+                v-if="showFlash && page.props.flash && page.props.flash.error"
+                class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded fixed top-24 right-4 z-50 shadow-lg"
+                style="max-width: 300px"
+            >
+                <span class="font-medium">Error!</span>
+                {{ page.props.flash.error }}
+            </div>
         </template>
         <div class="py-6">
             <div class="mb-10 flex justify-end">

@@ -18,9 +18,6 @@ class Article extends Model
         'price_with_vat',
     ];
 
-    protected $casts = [
-        'status' => 'boolean',
-    ];
 
     public function vatRate()
     {

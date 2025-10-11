@@ -7,6 +7,7 @@ use App\Models\Article;
 use App\Models\VatRate;
 use Illuminate\Http\Request;
 use PhpParser\Node\Stmt\TryCatch;
+use Illuminate\Validation\ValidationException;
 
 class ArticleController extends Controller
 {
@@ -61,8 +62,10 @@ class ArticleController extends Controller
             Article::create($validated);
 
             return redirect()->route('articles.index')->with('success', 'Article created successfully.');
+        } catch (ValidationException $e) {
+            throw $e;
         } catch (\Exception $e) {
-            return redirect()->back()->withErrors(['error' => 'An error occurred while creating the article.' . $e->getMessage()]);
+            return redirect()->back()->with(['error' => 'An error occurred while creating the article. ' . $e->getMessage()]);
         }
     }
 
@@ -81,7 +84,7 @@ class ArticleController extends Controller
      */
     public function edit(Article $article)
     {
-        $vatRates = VatRate::where('status', 'active')
+        $vatRates = VatRate::where('active', true)
             ->orderBy('name')->get();
 
         return Inertia::render('Articles/Edit', [
@@ -108,7 +111,7 @@ class ArticleController extends Controller
             ]);
 
             if (!($vatRate = VatRate::find($validated['vat_rate_id']))) {
-                return redirect()->back()->withErrors(['vat_rate_id' => 'VAT rate not found.']);
+                return redirect()->back()->with(['vat_rate_id' => 'VAT rate not found.']);
             }
 
             $priceWithVat = $validated['price'] * (1 + ($vatRate->rate / 100));
@@ -117,8 +120,10 @@ class ArticleController extends Controller
             $article->update($validated);
 
             return redirect()->route('articles.index')->with('success', 'Article updated successfully!');
+        } catch (ValidationException $e) {
+            throw $e;
         } catch (\Exception $e) {
-            return redirect()->back()->withErrors(['error' => 'Error updating article: ' . $e->getMessage()]);
+            return redirect()->back()->with(['error' => 'Error updating article: ' . $e->getMessage()]);
         }
     }
 
@@ -131,7 +136,7 @@ class ArticleController extends Controller
             $article->delete();
             return redirect()->route('articles.index')->with('success', 'Article deleted successfully!');
         } catch (\Exception $e) {
-            return redirect()->back()->withErrors(['error' => 'Error deleting article: ' . $e->getMessage()]);
+            return redirect()->back()->with(['error' => 'Error deleting article: ' . $e->getMessage()]);
         }
     }
 }

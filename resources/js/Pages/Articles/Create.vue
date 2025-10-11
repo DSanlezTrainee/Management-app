@@ -33,8 +33,8 @@ const form = useForm({
 });
 
 function submit() {
-    console.log("Form data:", { ...form });
     form.post(route("articles.store"));
+    
 }
 </script>
 
