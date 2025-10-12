@@ -140,9 +140,9 @@ const logout = () => {
                         <template #content>
                             <div class="flex flex-col gap-1 min-w-[140px]">
                                 <DropdownLink
-                                    :href="route('entities.clients')"
+                                    :href="route('orders.index')"
                                     :active="
-                                        route().current('entities.clients')
+                                        route().current('orders.index')
                                     "
                                 >
                                     Clients

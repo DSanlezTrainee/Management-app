@@ -16,7 +16,7 @@ import {
 } from "@/Components/ui/select";
 import ArticleCombobox from "@/Components/ArticleCombobox.vue";
 import TextInput from "@/Components/TextInput.vue";
-import { watch, ref, computed } from "vue";
+import { watch } from "vue";
 
 const props = defineProps({
     clients: Array,
@@ -33,6 +33,7 @@ const form = useForm({
     date: today,
     client_id: defaultClientId,
     valid_until: today,
+    status: "draft",
     lines: [],
 });
 
@@ -44,6 +45,15 @@ watch(
         form.valid_until = date.toISOString().slice(0, 10);
     },
     { immediate: true },
+);
+
+watch(
+    () => form.status,
+    (val) => {
+        if (val === "draft") {
+            form.date = new Date().toISOString().slice(0, 10);
+        }
+    },
 );
 
 function addLine() {
@@ -118,6 +128,7 @@ function submit() {
                                         type="date"
                                         required
                                         class="w-full"
+                                        :readonly="form.status === 'fechado'"
                                     />
                                 </FormControl>
                                 <p
@@ -181,6 +192,36 @@ function submit() {
                                     class="text-sm text-red-600 mt-1"
                                 >
                                     {{ form.errors.valid_until }}
+                                </p>
+                            </FormItem>
+                        </FormField>
+                    </div>
+                    <div class="flex flex-col gap-1 w-full">
+                        <FormField name="status">
+                            <FormItem class="w-full">
+                                <FormLabel>Status</FormLabel>
+                                <FormControl>
+                                    <Select v-model="form.status">
+                                        <SelectTrigger class="w-full bg-white">
+                                            <SelectValue
+                                                placeholder="Select Status"
+                                            />
+                                        </SelectTrigger>
+                                        <SelectContent class="bg-white">
+                                            <SelectItem value="draft"
+                                                >Draft</SelectItem
+                                            >
+                                            <SelectItem value="closed"
+                                                >Closed</SelectItem
+                                            >
+                                        </SelectContent>
+                                    </Select>
+                                </FormControl>
+                                <p
+                                    v-if="form.errors.status"
+                                    class="text-sm text-red-600 mt-1"
+                                >
+                                    {{ form.errors.status }}
                                 </p>
                             </FormItem>
                         </FormField>

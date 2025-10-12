@@ -16,6 +16,7 @@ import {
 } from "@/Components/ui/select";
 import ArticleCombobox from "@/Components/ArticleCombobox.vue";
 import TextInput from "@/Components/TextInput.vue";
+import { watch } from "vue";
 
 const props = defineProps({
     proposal: Object,
@@ -30,6 +31,7 @@ const form = useForm({
     date: props.proposal.date,
     client_id: props.proposal.client_id,
     valid_until: props.proposal.valid_until,
+    status: props.proposal.status || "draft",
     lines: props.proposal.lines.map((line) => ({
         article_id: line.article_id,
         supplier_id: line.supplier_id || "",
@@ -38,6 +40,18 @@ const form = useForm({
     })),
 });
 
+watch(
+    () => form.status,
+    (val) => {
+        if (val === "closed") {
+            const today = new Date();
+            form.date = today.toISOString().slice(0, 10);
+            const validUntil = new Date(today);
+            validUntil.setDate(validUntil.getDate() + 30);
+            form.valid_until = validUntil.toISOString().slice(0, 10);
+        }
+    },
+);
 function setArticlePrice(idx, articleId) {
     const article = props.articles.find((a) => a.id === articleId);
     if (article) {
@@ -67,10 +81,13 @@ function submit() {
 }
 
 function convertToOrder() {
-    // Placeholder: Chamar rota Inertia para conversão
-    // Exemplo: Inertia.post(route('proposals.convertToOrder', props.proposal.id));
-    // Implementação real será feita após backend
-    alert("Funcionalidade de conversão em encomenda ainda não implementada.");
+    if (
+        confirm(
+            "Are you sure you want to convert this proposal into an order?",
+        )
+    ) {
+        form.post(route("proposals.convertToOrder", props.proposal.id));
+    }
 }
 </script>
 
@@ -93,7 +110,7 @@ function convertToOrder() {
                     <div v-if="form.errors.error">{{ form.errors.error }}</div>
                 </div>
                 <div
-                    class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 items-start"
+                    class="grid grid-cols-1 md:grid-cols-3 gap-x-8 gap-y-4 items-start"
                 >
                     <div class="flex flex-col gap-1 w-full">
                         <FormField name="date">
@@ -168,6 +185,36 @@ function convertToOrder() {
                                     class="text-sm text-red-600 mt-1"
                                 >
                                     {{ form.errors.valid_until }}
+                                </p>
+                            </FormItem>
+                        </FormField>
+                    </div>
+                    <div class="flex flex-col gap-1 w-full">
+                        <FormField name="status">
+                            <FormItem class="w-full">
+                                <FormLabel>Status</FormLabel>
+                                <FormControl>
+                                    <Select v-model="form.status">
+                                        <SelectTrigger class="w-full bg-white">
+                                            <SelectValue
+                                                placeholder="Select Status"
+                                            />
+                                        </SelectTrigger>
+                                        <SelectContent class="bg-white">
+                                            <SelectItem value="draft"
+                                                >Draft</SelectItem
+                                            >
+                                            <SelectItem value="closed"
+                                                >Closed</SelectItem
+                                            >
+                                        </SelectContent>
+                                    </Select>
+                                </FormControl>
+                                <p
+                                    v-if="form.errors.status"
+                                    class="text-sm text-red-600 mt-1"
+                                >
+                                    {{ form.errors.status }}
                                 </p>
                             </FormItem>
                         </FormField>
@@ -329,8 +376,6 @@ function convertToOrder() {
                         {{ form.processing ? "Saving..." : "Save" }}
                     </button>
                 </div>
-
-                <!-- Removido bloco duplicado de botões -->
             </form>
         </div>
     </AppLayout>

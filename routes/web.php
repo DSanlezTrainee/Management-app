@@ -9,7 +9,15 @@ use App\Http\Controllers\VatRateController;
 
 Route::middleware(['auth'])->group(function () {
 
-    Route::get('/proposals/{proposal}/pdf', [App\Http\Controllers\ProposalController::class, 'pdf'])->name('proposals.pdf');
+    // Orders routes
+    Route::get('/orders', [App\Http\Controllers\OrderController::class, 'index'])->name('orders.index');
+    Route::get('/orders/create', [App\Http\Controllers\OrderController::class, 'create'])->name('orders.create');
+    Route::post('/orders', [App\Http\Controllers\OrderController::class, 'store'])->name('orders.store');
+    Route::get('/orders/{order}', [App\Http\Controllers\OrderController::class, 'show'])->name('orders.show');
+    Route::get('/orders/{order}/edit', [App\Http\Controllers\OrderController::class, 'edit'])->name('orders.edit');
+    Route::get('/orders/{order}/pdf', [App\Http\Controllers\OrderController::class, 'pdf'])->name('orders.pdf');
+    Route::put('/orders/{order}', [App\Http\Controllers\OrderController::class, 'update'])->name('orders.update');
+    Route::delete('/orders/{order}', [App\Http\Controllers\OrderController::class, 'destroy'])->name('orders.destroy');
 
     // Proposals routes
     Route::get('/proposals', [App\Http\Controllers\ProposalController::class, 'index'])->name('proposals.index');
@@ -20,7 +28,7 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/proposals/{proposal}', [App\Http\Controllers\ProposalController::class, 'update'])->name('proposals.update');
     Route::delete('/proposals/{proposal}', [App\Http\Controllers\ProposalController::class, 'destroy'])->name('proposals.destroy');
     Route::post('/proposals/{proposal}/convert-to-order', [App\Http\Controllers\ProposalController::class, 'convertToOrder'])->name('proposals.convertToOrder');
-
+    Route::get('/proposals/{proposal}/pdf', [App\Http\Controllers\ProposalController::class, 'pdf'])->name('proposals.pdf');
     // Articles routes
     Route::get('/articles', [ArticleController::class, 'index'])->name('articles.index');
     Route::get('/articles/create', [ArticleController::class, 'create'])->name('articles.create');
@@ -66,9 +74,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/entities/vies-lookup', [App\Http\Controllers\EntityController::class, 'viesLookup']);
 });
 
-Route::middleware(['auth'])->group(function () {
-    Route::resource('proposals', App\Http\Controllers\ProposalController::class);
-});
+
 
 
 Route::get('/', function () {

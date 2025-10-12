@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Proposal;
 use App\Models\Entity;
 use App\Models\Article;
+use App\Models\Order;
+use App\Models\OrderLine;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Str;
@@ -37,6 +39,7 @@ class ProposalController extends Controller
             'date' => 'required|date',
             'client_id' => 'required|exists:entities,id',
             'valid_until' => 'required|date',
+            'status' => 'required|in:draft,closed',
             'lines' => 'required|array|min:1',
             'lines.*.article_id' => 'required|exists:articles,id',
             'lines.*.quantity' => 'required|numeric|min:1',
@@ -52,11 +55,12 @@ class ProposalController extends Controller
             'client_id' => $validated['client_id'],
             'valid_until' => $validated['valid_until'],
             'total' => collect($validated['lines'])->sum(fn($l) => $l['price'] * $l['quantity']),
-            'status' => 'draft',
+            'status' => $validated['status'],
         ]);
         foreach ($validated['lines'] as $line) {
             $proposal->lines()->create($line);
         }
+
         return redirect()->route('proposals.index')->with('success', 'Proposal created successfully!');
     }
 
@@ -88,6 +92,7 @@ class ProposalController extends Controller
             'date' => 'required|date',
             'client_id' => 'required|exists:entities,id',
             'valid_until' => 'required|date',
+            'status' => 'required|in:draft,closed',
             'lines' => 'required|array|min:1',
             'lines.*.article_id' => 'required|exists:articles,id',
             'lines.*.quantity' => 'required|numeric|min:1',
@@ -101,6 +106,7 @@ class ProposalController extends Controller
             'client_id' => $validated['client_id'],
             'valid_until' => $validated['valid_until'],
             'total' => collect($validated['lines'])->sum(fn($l) => $l['price'] * $l['quantity']),
+            'status' => $validated['status'],
         ]);
         $proposal->lines()->delete();
         foreach ($validated['lines'] as $line) {
@@ -122,5 +128,37 @@ class ProposalController extends Controller
         $pdf->loadView('pdf.proposal', ['proposal' => $proposal]);
         $filename = 'Proposal_' . $proposal->number . '.pdf';
         return $pdf->download($filename);
+    }
+
+    public function convertToOrder(Proposal $proposal)
+    {
+        $proposal->load('lines');
+
+        $nextId = Order::max('id') + 1;
+        $number = 'ENC-' . str_pad($nextId, 5, '0', STR_PAD_LEFT);
+
+        $order = Order::create([
+            'number' => $number,
+            'date' => $proposal->date, // Usar a data da proposta
+            'client_id' => $proposal->client_id,
+            'valid_until' => $proposal->valid_until,
+            'total' => $proposal->total,
+            'status' => 'draft',
+        ]);
+
+        foreach ($proposal->lines as $line) {
+            $order->lines()->create([
+                'article_id' => $line->article_id,
+                'supplier_id' => $line->supplier_id,
+                'quantity' => $line->quantity,
+                'price' => $line->price,
+                'cost_price' => $line->cost_price ?? null,
+            ]);
+        }
+
+        $proposal->delete();
+
+        return redirect()->route('orders.index', $order->id)
+            ->with('success', 'Orders created from the proposal!');
     }
 }
