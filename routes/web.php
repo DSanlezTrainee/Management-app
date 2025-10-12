@@ -8,6 +8,15 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\VatRateController;
 
 Route::middleware(['auth'])->group(function () {
+    // Supplier Invoices routes
+    Route::get('/supplier-invoices', [App\Http\Controllers\SupplierInvoiceController::class, 'index'])->name('supplier-invoices.index');
+    Route::get('/supplier-invoices/create', [App\Http\Controllers\SupplierInvoiceController::class, 'create'])->name('supplier-invoices.create');
+    Route::post('/supplier-invoices', [App\Http\Controllers\SupplierInvoiceController::class, 'store'])->name('supplier-invoices.store');
+    Route::get('/supplier-invoices/{supplierInvoice}', [App\Http\Controllers\SupplierInvoiceController::class, 'show'])->name('supplier-invoices.show');
+    Route::get('/supplier-invoices/{supplierInvoice}/edit', [App\Http\Controllers\SupplierInvoiceController::class, 'edit'])->name('supplier-invoices.edit');
+    Route::put('/supplier-invoices/{supplierInvoice}', [App\Http\Controllers\SupplierInvoiceController::class, 'update'])->name('supplier-invoices.update');
+    Route::delete('/supplier-invoices/{supplierInvoice}', [App\Http\Controllers\SupplierInvoiceController::class, 'destroy'])->name('supplier-invoices.destroy');
+
 
     //Supplier Orders routes
     Route::get('/supplier-orders', [App\Http\Controllers\SupplierOrderController::class, 'index'])->name('supplier-orders.index');

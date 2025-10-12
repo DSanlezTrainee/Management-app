@@ -162,6 +162,48 @@ const logout = () => {
                                 type="button"
                                 class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-full text-blue-900 bg-blue-100 hover:bg-blue-200 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF2D20] dark:text-blue-100 dark:bg-blue-800 dark:hover:bg-blue-700 dark:focus-visible:ring-white shadow-sm"
                             >
+                                Financial
+                                <svg
+                                    class="ms-2 -me-0.5 size-4"
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    stroke-width="1.5"
+                                    stroke="currentColor"
+                                >
+                                    <path
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        d="M19.5 8.25l-7.5 7.5-7.5-7.5"
+                                    />
+                                </svg>
+                            </button>
+                        </template>
+                        <template #content>
+                            <div class="flex flex-col gap-1 min-w-[140px]">
+                                <DropdownLink
+                                    :href="route('supplier-invoices.index')"
+                                    :active="route().current('supplier-invoices.index')"
+                                >
+                                    Supplier Invoices
+                                </DropdownLink>
+                                <DropdownLink
+                                    :href="route('supplier-orders.index')"
+                                    :active="
+                                        route().current('supplier-orders.index')
+                                    "
+                                >
+                                    Suppliers
+                                </DropdownLink>
+                            </div>
+                        </template>
+                    </Dropdown>
+                    <Dropdown align="left" width="48">
+                        <template #trigger>
+                            <button
+                                type="button"
+                                class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-full text-blue-900 bg-blue-100 hover:bg-blue-200 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF2D20] dark:text-blue-100 dark:bg-blue-800 dark:hover:bg-blue-700 dark:focus-visible:ring-white shadow-sm"
+                            >
                                 Configurations
                                 <svg
                                     class="ms-2 -me-0.5 size-4"
