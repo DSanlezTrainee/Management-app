@@ -42,8 +42,8 @@ const props = defineProps({
 const emits = defineEmits(["update:modelValue"]);
 
 const searchQuery = ref("");
-
 const dropdownOpen = ref(false);
+const comboboxRef = ref(null);
 
 function getFilteredOptions() {
     if (!searchQuery.value) return props.options;
@@ -84,9 +84,7 @@ function getSelectedOption() {
 // Close dropdown when clicking outside
 
 function handleClickOutside(event) {
-    const combobox = document.querySelector(".article-combobox");
-
-    if (combobox && !combobox.contains(event.target)) {
+    if (comboboxRef.value && !comboboxRef.value.contains(event.target)) {
         dropdownOpen.value = false;
     }
 }
@@ -101,7 +99,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <div class="relative w-full article-combobox">
+    <div class="relative w-full article-combobox" ref="comboboxRef">
         <div class="w-full">
             <input
                 type="text"

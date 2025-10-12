@@ -69,7 +69,8 @@ function getLinePrice(line) {
     const article = props.articles.find((a) => a.id == line.article_id);
     const q = Number(line.quantity);
     const p = article ? Number(article.price) : 0;
-    return isNaN(q) || isNaN(p) ? "0" : (q * p).toString();
+    if (isNaN(q) || isNaN(p)) return "0.00";
+    return (q * p).toFixed(2);
 }
 
 function setArticlePrice(idx, articleId) {
@@ -319,7 +320,6 @@ function submit() {
                                             step="0.01"
                                             required
                                             class="w-full"
-                                            readonly
                                         />
                                     </FormControl>
                                     <p

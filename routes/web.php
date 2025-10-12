@@ -9,7 +9,18 @@ use App\Http\Controllers\VatRateController;
 
 Route::middleware(['auth'])->group(function () {
 
-    // Orders routes
+    //Supplier Orders routes
+    Route::get('/supplier-orders', [App\Http\Controllers\SupplierOrderController::class, 'index'])->name('supplier-orders.index');
+    Route::get('/supplier-orders/create', [App\Http\Controllers\SupplierOrderController::class, 'create'])->name('supplier-orders.create');
+    Route::post('/supplier-orders', [App\Http\Controllers\SupplierOrderController::class, 'store'])->name('supplier-orders.store');
+    Route::get('/supplier-orders/{supplierOrder}', [App\Http\Controllers\SupplierOrderController::class, 'show'])->name('supplier-orders.show');
+    Route::get('/supplier-orders/{supplierOrder}/edit', [App\Http\Controllers\SupplierOrderController::class, 'edit'])->name('supplier-orders.edit');
+    Route::put('/supplier-orders/{supplierOrder}', [App\Http\Controllers\SupplierOrderController::class, 'update'])->name('supplier-orders.update');
+    Route::delete('/supplier-orders/{supplierOrder}', [App\Http\Controllers\SupplierOrderController::class, 'destroy'])->name('supplier-orders.destroy');
+    Route::get('/supplier-orders/{supplierOrder}/pdf', [App\Http\Controllers\SupplierOrderController::class, 'pdf'])->name('supplier-orders.pdf');
+    Route::post('/orders/{order}/convert-to-supplier-orders', [App\Http\Controllers\OrderController::class, 'convertToSupplierOrders'])->name('orders.convertToSupplierOrders');
+
+    // Client Orders routes
     Route::get('/orders', [App\Http\Controllers\OrderController::class, 'index'])->name('orders.index');
     Route::get('/orders/create', [App\Http\Controllers\OrderController::class, 'create'])->name('orders.create');
     Route::post('/orders', [App\Http\Controllers\OrderController::class, 'store'])->name('orders.store');

@@ -139,7 +139,7 @@ class ProposalController extends Controller
 
         $order = Order::create([
             'number' => $number,
-            'date' => $proposal->date, // Usar a data da proposta
+            'date' => $proposal->date, 
             'client_id' => $proposal->client_id,
             'valid_until' => $proposal->valid_until,
             'total' => $proposal->total,

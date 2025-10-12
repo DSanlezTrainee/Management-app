@@ -71,6 +71,14 @@ function formatArticleDisplay(article) {
     return article ? `${article.name} (${article.reference})` : "";
 }
 
+function getLinePrice(line) {
+    const article = props.articles.find((a) => a.id == line.article_id);
+    const q = Number(line.quantity);
+    const p = article ? Number(article.price) : 0;
+    if (isNaN(q) || isNaN(p)) return "0.00";
+    return (q * p).toFixed(2);
+}
+
 function submit() {
     form.post(route("orders.store"));
 }
@@ -273,7 +281,7 @@ function submit() {
                                 <FormLabel>Price</FormLabel>
                                 <FormControl>
                                     <TextInput
-                                        v-model="line.price"
+                                        :value="getLinePrice(line)"
                                         type="number"
                                         min="0"
                                         step="0.01"

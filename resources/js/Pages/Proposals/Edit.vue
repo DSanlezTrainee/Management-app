@@ -35,10 +35,18 @@ const form = useForm({
     lines: props.proposal.lines.map((line) => ({
         article_id: line.article_id,
         supplier_id: line.supplier_id || "",
-        quantity: line.quantity,
+        quantity: parseInt(line.quantity, 10),
         price: line.price,
     })),
 });
+
+function getLinePrice(line) {
+    const article = props.articles.find((a) => a.id == line.article_id);
+    const q = Number(line.quantity);
+    const p = article ? Number(article.price) : 0;
+    if (isNaN(q) || isNaN(p)) return "0.00";
+    return (q * p).toFixed(2);
+}
 
 watch(
     () => form.status,
@@ -63,8 +71,8 @@ function addLine() {
     form.lines.push({
         article_id: "",
         supplier_id: "",
-        quantity: 1,
-        price: 0,
+        quantity: "1",
+        price: "0",
     });
 }
 
@@ -82,9 +90,7 @@ function submit() {
 
 function convertToOrder() {
     if (
-        confirm(
-            "Are you sure you want to convert this proposal into an order?",
-        )
+        confirm("Are you sure you want to convert this proposal into an order?")
     ) {
         form.post(route("proposals.convertToOrder", props.proposal.id));
     }
@@ -305,7 +311,7 @@ function convertToOrder() {
                                     <FormLabel>Price</FormLabel>
                                     <FormControl>
                                         <TextInput
-                                            v-model="line.price"
+                                            :value="getLinePrice(line)"
                                             type="number"
                                             min="0"
                                             step="0.01"

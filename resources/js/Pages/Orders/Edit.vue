@@ -39,7 +39,6 @@ const form = useForm({
     })),
 });
 
-// Atualiza data e valid_until quando status muda para 'closed'
 watch(
     () => form.status,
     (val) => {
@@ -53,6 +52,11 @@ watch(
     },
 );
 
+function convertToSupplierOrders() {
+    if (confirm("Create supplier orders from this customer order?")) {
+        form.post(route("orders.convertToSupplierOrders", props.order.id));
+    }
+}
 function addLine() {
     form.lines.push({
         article_id: "",
@@ -61,6 +65,14 @@ function addLine() {
         price: 0,
         cost_price: null,
     });
+}
+
+function getLinePrice(line) {
+    const article = props.articles.find((a) => a.id == line.article_id);
+    const q = Number(line.quantity);
+    const p = article ? Number(article.price) : 0;
+    if (isNaN(q) || isNaN(p)) return "0.00";
+    return (q * p).toFixed(2);
 }
 
 function removeLine(idx) {
@@ -272,10 +284,10 @@ function submit() {
                     <div>
                         <FormField :name="`lines.${idx}.price`">
                             <FormItem class="w-full">
-                                <FormLabel>Preço</FormLabel>
+                                <FormLabel>Price</FormLabel>
                                 <FormControl>
                                     <TextInput
-                                        v-model="line.price"
+                                        :value="getLinePrice(line)"
                                         type="number"
                                         min="0"
                                         step="0.01"
@@ -328,7 +340,16 @@ function submit() {
                     </div>
                 </div>
             </div>
-            <div class="col-span-1 md:col-span-2 mt-8 flex justify-end">
+            <div class="col-span-1 md:col-span-2 mt-8 flex justify-between">
+                <template v-if="form.status === 'closed'">
+                    <button
+                        type="button"
+                        class="px-6 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700 transition"
+                        @click="convertToSupplierOrders"
+                    >
+                        Convert to Supplier Orders
+                    </button>
+                </template>
                 <button
                     type="submit"
                     class="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
