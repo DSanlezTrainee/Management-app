@@ -162,7 +162,7 @@ const logout = () => {
                                 type="button"
                                 class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-full text-blue-900 bg-blue-100 hover:bg-blue-200 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF2D20] dark:text-blue-100 dark:bg-blue-800 dark:hover:bg-blue-700 dark:focus-visible:ring-white shadow-sm"
                             >
-                                Financial
+                                Access Management
                                 <svg
                                     class="ms-2 -me-0.5 size-4"
                                     xmlns="http://www.w3.org/2000/svg"
@@ -182,10 +182,10 @@ const logout = () => {
                         <template #content>
                             <div class="flex flex-col gap-1 min-w-[140px]">
                                 <DropdownLink
-                                    :href="route('supplier-invoices.index')"
-                                    :active="route().current('supplier-invoices.index')"
+                                    :href="route('users.index')"
+                                    :active="route().current('users.index')"
                                 >
-                                    Supplier Invoices
+                                    Users
                                 </DropdownLink>
                                 <DropdownLink
                                     :href="route('supplier-orders.index')"
@@ -193,7 +193,7 @@ const logout = () => {
                                         route().current('supplier-orders.index')
                                     "
                                 >
-                                    Suppliers
+                                    Permissions
                                 </DropdownLink>
                             </div>
                         </template>
