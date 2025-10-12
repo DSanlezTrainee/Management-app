@@ -15,8 +15,8 @@ class UserController extends Controller
     {
         $users = User::with('roles')
             ->select('id', 'name', 'email', 'mobile', 'status')
-            ->get()
-            ->map(function ($user) {
+            ->paginate(20)
+            ->through(function ($user) {
                 return [
                     'id' => $user->id,
                     'name' => $user->name,
@@ -83,17 +83,22 @@ class UserController extends Controller
      */
     public function edit(string $id)
     {
-        $user = User::with('roles')->findOrFail($id);
+        $users = User::with('roles')
+            ->select('id', 'name', 'email', 'mobile', 'status')
+            ->paginate(20) // <--- Usa paginação
+            ->through(function ($user) {
+                return [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'mobile' => $user->mobile,
+                    'role' => $user->roles->pluck('name')->first(),
+                    'status' => $user->status,
+                ];
+            });
         $roles = \Spatie\Permission\Models\Role::select('id', 'name')->get();
-        return Inertia::render('Access/Users/Edit', [
-            'user' => [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'mobile' => $user->mobile,
-                'role' => $user->roles->pluck('name')->first(),
-                'status' => $user->status,
-            ],
+        return \Inertia\Inertia::render('Access/Users/Index', [
+            'users' => $users,
             'roles' => $roles,
         ]);
     }

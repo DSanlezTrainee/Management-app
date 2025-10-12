@@ -8,10 +8,12 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\VatRateController;
 
 Route::middleware(['auth'])->group(function () {
+    
+    Route::resource('roles', App\Http\Controllers\RoleController::class);
 
     // User management routes  
     Route::resource('users', App\Http\Controllers\UserController::class);
-    
+
     // Supplier Invoices routes
     Route::get('/supplier-invoices', [App\Http\Controllers\SupplierInvoiceController::class, 'index'])->name('supplier-invoices.index');
     Route::get('/supplier-invoices/create', [App\Http\Controllers\SupplierInvoiceController::class, 'create'])->name('supplier-invoices.create');

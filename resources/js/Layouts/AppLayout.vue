@@ -188,9 +188,9 @@ const logout = () => {
                                     Users
                                 </DropdownLink>
                                 <DropdownLink
-                                    :href="route('supplier-orders.index')"
+                                    :href="route('roles.index')"
                                     :active="
-                                        route().current('supplier-orders.index')
+                                        route().current('roles.index')
                                     "
                                 >
                                     Permissions
