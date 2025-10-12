@@ -1,5 +1,11 @@
 <script setup>
-import { ref, onMounted, onUnmounted } from "vue";
+import { ref, computed } from "vue";
+import Combobox from "@/Components/ui/combobox/Combobox.vue";
+import ComboboxTrigger from "@/Components/ui/combobox/ComboboxTrigger.vue";
+import ComboboxAnchor from "@/Components/ui/combobox/ComboboxAnchor.vue";
+import ComboboxList from "@/Components/ui/combobox/ComboboxList.vue";
+import ComboboxItem from "@/Components/ui/combobox/ComboboxItem.vue";
+import ComboboxEmpty from "@/Components/ui/combobox/ComboboxEmpty.vue";
 
 const props = defineProps({
     options: {
@@ -30,14 +36,11 @@ const props = defineProps({
 
 const emits = defineEmits(["update:modelValue"]);
 
-const searchQuery = ref("");
-const dropdownOpen = ref(false);
+const search = ref("");
 
-function getFilteredOptions() {
-    if (!searchQuery.value) return props.options;
-
-    const query = searchQuery.value.toLowerCase();
-
+const filteredOptions = computed(() => {
+    if (!search.value) return props.options;
+    const query = search.value.toLowerCase();
     return props.options.filter((option) => {
         if (props.labelField === "name" && option.reference) {
             return (
@@ -47,96 +50,69 @@ function getFilteredOptions() {
                 String(option.reference).toLowerCase().includes(query)
             );
         }
-
         return String(option[props.labelField]).toLowerCase().includes(query);
     });
-}
+});
 
 function getDisplayText(option) {
     if (!option) return "";
-
     if (props.displayFormat) {
         return props.displayFormat(option);
     }
-
     return String(option[props.labelField]);
 }
 
-function getSelectedOption() {
+const selectedOption = computed(() => {
     return props.options.find(
         (o) => String(o[props.valueField]) === String(props.modelValue),
     );
-}
-
-// Close dropdown when clicking outside
-function handleClickOutside(event) {
-    const combobox = document.querySelector(".article-combobox");
-    if (combobox && !combobox.contains(event.target)) {
-        dropdownOpen.value = false;
-    }
-}
-
-onMounted(() => {
-    document.addEventListener("click", handleClickOutside);
-});
-
-onUnmounted(() => {
-    document.removeEventListener("click", handleClickOutside);
 });
 </script>
 
 <template>
-    <div class="relative w-full article-combobox">
-        <div class="w-full">
-            <input
-                type="text"
-                class="w-full p-2 border border-gray-300 rounded-md"
-                :value="
-                    dropdownOpen
-                        ? searchQuery
-                        : getDisplayText(getSelectedOption())
-                "
-                @input="(e) => (searchQuery = e.target.value)"
-                :placeholder="placeholder"
-                @focus="
-                    () => {
-                        dropdownOpen = true;
-                        searchQuery = '';
-                    }
-                "
-                @click="
-                    () => {
-                        dropdownOpen = true;
-                        searchQuery = '';
-                    }
-                "
-            />
-        </div>
-
-        <div
-            v-if="dropdownOpen"
-            class="absolute w-full mt-1 max-h-60 overflow-auto z-50 bg-white rounded-md shadow-lg border border-gray-300"
+    <Combobox
+        v-model="search"
+        :modelValue="props.modelValue"
+        @update:modelValue="(val) => emits('update:modelValue', val)"
+        class="w-full"
+        :openOnFocus="true"
+        :openOnClick="true"
+        :resetSearchTermOnSelect="true"
+        :resetSearchTermOnBlur="true"
+        :by="props.valueField"
+    >
+        <ComboboxAnchor class="w-full">
+            <ComboboxTrigger class="w-full">
+                <input
+                    class="w-full p-2 border border-gray-300 rounded-md"
+                    :placeholder="placeholder"
+                    :value="search || getDisplayText(selectedOption)"
+                    @input="(e) => (search = e.target.value)"
+                />
+            </ComboboxTrigger>
+        </ComboboxAnchor>
+        <ComboboxList
+            class="w-full mt-1 max-h-60 overflow-auto z-50 bg-white rounded-md shadow-lg border border-gray-300"
         >
-            <div
-                v-if="getFilteredOptions().length === 0"
-                class="p-2 text-center text-gray-500"
-            >
-                No results found
-            </div>
-            <div
-                v-for="option in getFilteredOptions()"
-                :key="option[valueField]"
-                @click="
-                    () => {
-                        $emit('update:modelValue', option[valueField]);
-                        dropdownOpen = false;
-                        searchQuery = '';
-                    }
-                "
-                class="p-2 hover:bg-gray-100 cursor-pointer"
-            >
-                {{ getDisplayText(option) }}
-            </div>
-        </div>
-    </div>
+            <template v-if="filteredOptions.length === 0">
+                <ComboboxEmpty>No results found</ComboboxEmpty>
+            </template>
+            <template v-else>
+                <ComboboxItem
+                    v-for="option in filteredOptions"
+                    :key="option[valueField]"
+                    :value="option[valueField]"
+                    :textValue="getDisplayText(option)"
+                    @select="
+                        () => {
+                            emits('update:modelValue', option[valueField]);
+                            search = '';
+                        }
+                    "
+                >
+                    {{ getDisplayText(option) }}
+                </ComboboxItem>
+            </template>
+        </ComboboxList>
+    </Combobox>
 </template>
