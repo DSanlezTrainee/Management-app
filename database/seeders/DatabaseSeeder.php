@@ -28,6 +28,7 @@ class DatabaseSeeder extends Seeder
             ContactFunctionSeeder::class,
             VatRateSeeder::class,
             ArticleSeeder::class,
+            CompanySeeder::class,
             ProposalSeeder::class,
         ]);
     }

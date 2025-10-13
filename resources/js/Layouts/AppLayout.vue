@@ -43,18 +43,30 @@ const logout = () => {
             <nav
                 class="w-full fixed top-0 left-0 z-30 bg-blue-900/90 dark:bg-blue-950/90 backdrop-blur-lg shadow-md border-b border-blue-800 flex items-center justify-between px-6 sm:px-12 py-4"
             >
-                <!-- Logo + Title -->
+                <!-- Logo + Company Name -->
                 <div class="flex items-center gap-2">
-                    <a href="/"
-                        ><span
+                    <a href="/">
+                        <img
+                            v-if="
+                                $page.props.company && $page.props.company.logo
+                            "
+                            :src="'/storage/' + $page.props.company.logo"
+                            alt="Logotipo da Empresa"
+                            class="h-10 w-auto max-w-[120px] object-contain rounded bg-white border border-blue-200 shadow-sm"
+                        />
+                        <span
+                            v-else
                             class="font-extrabold text-xl sm:text-2xl text-white tracking-tight select-none"
-                            >Management App</span
-                        ></a
-                    >
+                        >
+                            {{ $page.props.company?.name || "Management App" }}
+                        </span>
+                    </a>
                     <span
+                        v-if="$page.props.company && $page.props.company.name"
                         class="hidden sm:inline-block text-xs font-medium text-blue-200 dark:text-blue-300"
-                        >Manage with simplicity</span
                     >
+                        {{ $page.props.company.name }}
+                    </span>
                 </div>
 
                 <div class="flex items-center gap-4">
@@ -238,6 +250,14 @@ const logout = () => {
                                     :active="route().current('vat-rates.index')"
                                 >
                                     Contact: Functions
+                                </DropdownLink>
+                                <DropdownLink
+                                    :href="route('settings.company.edit')"
+                                    :active="
+                                        route().current('settings.company.edit')
+                                    "
+                                >
+                                    Company
                                 </DropdownLink>
                                 <DropdownLink
                                     :href="route('vat-rates.index')"

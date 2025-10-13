@@ -55,19 +55,31 @@
 </head>
 
 <body>
-    <div class="header">
-        <div class="title">Order {{ $order->number }}</div>
-        <table class="info-table">
-            <tr>
-                <td><strong>Date:</strong> {{ $order->date }}</td>
-                <td><strong>Valid Until:</strong> {{ $order->valid_until }}</td>
-            </tr>
-            <tr>
-                <td><strong>Client:</strong> {{ $order->client->name ?? '-' }}</td>
-                <td><strong>Status:</strong> {{ ucfirst($order->status) }}</td>
-            </tr>
-        </table>
+    <div class="header" style="display: flex; align-items: flex-start; justify-content: space-between;">
+        <div style="display: flex; align-items: center; gap: 16px;">
+            @if($company && $company->logo)
+            <img src="{{ public_path('storage/' . $company->logo) }}" alt="Logo"
+                style="height: 60px; max-width: 120px; object-fit: contain; border-radius: 6px; border: 1px solid #eee;" />
+            @endif
+            <div>
+                <div style="font-size: 18px; font-weight: bold;">{{ $company->name ?? '' }}</div>
+                <div style="font-size: 13px;">{{ $company->address ?? '' }}</div>
+                <div style="font-size: 13px;">{{ $company->postal_code ?? '' }} {{ $company->city ?? '' }}</div>
+                <div style="font-size: 13px;">NIF: {{ $company->nif ?? '' }}</div>
+            </div>
+        </div>
+        <div class="title" style="margin-bottom:0;">Order {{ $order->number }}</div>
     </div>
+    <table class="info-table">
+        <tr>
+            <td><strong>Date:</strong> {{ $order->date }}</td>
+            <td><strong>Valid Until:</strong> {{ $order->valid_until }}</td>
+        </tr>
+        <tr>
+            <td><strong>Client:</strong> {{ $order->client->name ?? '-' }}</td>
+            <td><strong>Status:</strong> {{ ucfirst($order->status) }}</td>
+        </tr>
+    </table>
     <table class="lines-table">
         <thead>
             <tr>

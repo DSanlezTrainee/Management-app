@@ -1,3 +1,4 @@
+
 <?php
 
 use Inertia\Inertia;
@@ -8,9 +9,14 @@ use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\VatRateController;
 
+
+
+
 Route::middleware(['auth'])->group(function () {
 
-
+    // Company Routes 
+    Route::get('company', [\App\Http\Controllers\CompanyController::class, 'edit'])->name('settings.company.edit');
+    Route::match(['put', 'post'], 'company', [\App\Http\Controllers\CompanyController::class, 'update'])->name('settings.company.update');
 
     Route::get('/logs', [LogController::class, 'index'])->name('logs.index');
     Route::delete('/logs/{id}', [LogController::class, 'destroy'])->name('logs.destroy');
