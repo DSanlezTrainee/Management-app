@@ -126,6 +126,12 @@ const logout = () => {
                     >
                         Proposals
                     </NavLink>
+                    <NavLink
+                        :href="route('calendar.index')"
+                        :active="route().current('calendar.index')"
+                    >
+                        Calendar
+                    </NavLink>
                     <Dropdown align="left" width="48">
                         <template #trigger>
                             <button
@@ -258,6 +264,24 @@ const logout = () => {
                                     "
                                 >
                                     Company
+                                </DropdownLink>
+                                <DropdownLink
+                                    :href="route('calendar-types.index')"
+                                    :active="
+                                        route().current('calendar-types.index')
+                                    "
+                                >
+                                    Calendar Types
+                                </DropdownLink>
+                                <DropdownLink
+                                    :href="route('calendar-actions.index')"
+                                    :active="
+                                        route().current(
+                                            'calendar-actions.index',
+                                        )
+                                    "
+                                >
+                                    Calendar Actions
                                 </DropdownLink>
                                 <DropdownLink
                                     :href="route('vat-rates.index')"

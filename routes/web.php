@@ -110,6 +110,13 @@ Route::middleware(['auth'])->group(function () {
 
     // VIES lookup route
     Route::post('/entities/vies-lookup', [App\Http\Controllers\EntityController::class, 'viesLookup']);
+
+    // Calendar Types & Actions
+    Route::resource('calendar-types', App\Http\Controllers\CalendarTypeController::class)->except(['show']);
+    Route::resource('calendar-actions', App\Http\Controllers\CalendarActionController::class)->except(['show']);
+    
+    // Calendar Events
+    Route::resource('calendar', App\Http\Controllers\CalendarController::class);
 });
 
 
