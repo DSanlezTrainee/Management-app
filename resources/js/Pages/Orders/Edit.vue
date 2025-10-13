@@ -99,14 +99,14 @@ function submit() {
     <AppLayout title="Edit Order">
         <template #header>
             <h2
-                class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight"
+                class="text-3xl font-extrabold text-cyan-900 dark:text-cyan-100 tracking-tight mb-6"
             >
                 Edit Order
             </h2>
         </template>
-        <form @submit.prevent="submit" class="max-w-3xl mx-auto space-y-4">
+        <form @submit.prevent="submit" class="max-w-3xl mx-auto space-y-8">
             <div
-                class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 items-start"
+                class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 items-start bg-white/80 dark:bg-slate-800/80 p-6 rounded-xl shadow"
             >
                 <div class="flex flex-col gap-1 w-full">
                     <FormField name="date">
@@ -219,14 +219,14 @@ function submit() {
                 <button
                     type="button"
                     @click="addLine"
-                    class="mb-4 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+                    class="mb-4 px-4 py-2 rounded-lg bg-green-600 text-white font-semibold shadow hover:bg-green-700 transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-green-400"
                 >
                     Add Line
                 </button>
                 <div
                     v-for="(line, idx) in form.lines"
                     :key="idx"
-                    class="grid grid-cols-1 md:grid-cols-5 gap-2 mb-2 items-end"
+                    class="grid grid-cols-1 md:grid-cols-5 gap-2 mb-2 items-end bg-white/70 dark:bg-slate-700/70 p-2 rounded-lg"
                 >
                     <div class="md:col-span-2">
                         <FormField :name="`lines.${idx}.article_id`">
@@ -333,7 +333,7 @@ function submit() {
                         <button
                             type="button"
                             @click="removeLine(idx)"
-                            class="px-2 py-1 bg-red-600 text-white rounded hover:bg-red-700"
+                            class="px-2 py-1 rounded bg-red-600 text-white font-semibold shadow hover:bg-red-700 transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-red-400"
                         >
                             Remove
                         </button>
@@ -344,7 +344,7 @@ function submit() {
                 <template v-if="form.status === 'closed'">
                     <button
                         type="button"
-                        class="px-6 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700 transition"
+                        class="inline-flex items-center gap-2 px-6 py-2 rounded-lg bg-yellow-600 text-white font-semibold shadow hover:bg-yellow-700 transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-yellow-400"
                         @click="convertToSupplierOrders"
                     >
                         Convert to Supplier Orders
@@ -352,7 +352,7 @@ function submit() {
                 </template>
                 <button
                     type="submit"
-                    class="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+                    class="inline-flex items-center gap-2 px-6 py-2 rounded-lg bg-cyan-700 text-white font-semibold shadow hover:bg-cyan-800 transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
                     :disabled="form.processing"
                 >
                     {{ form.processing ? "Saving..." : "Save" }}

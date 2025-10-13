@@ -80,7 +80,20 @@ class UserController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $user = User::with('roles')->select('id', 'name', 'email', 'mobile', 'status')->findOrFail($id);
+        $roles = \Spatie\Permission\Models\Role::select('id', 'name')->get();
+        $this->logActivity('viewed user', $user);
+        return \Inertia\Inertia::render('Access/Users/Show', [
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'mobile' => $user->mobile,
+                'role' => $user->roles->pluck('name')->first(),
+                'status' => $user->status,
+            ],
+            'roles' => $roles,
+        ]);
     }
 
     /**
@@ -88,22 +101,17 @@ class UserController extends Controller
      */
     public function edit(string $id)
     {
-        $users = User::with('roles')
-            ->select('id', 'name', 'email', 'mobile', 'status')
-            ->paginate(20)
-            ->through(function ($user) {
-                return [
-                    'id' => $user->id,
-                    'name' => $user->name,
-                    'email' => $user->email,
-                    'mobile' => $user->mobile,
-                    'role' => $user->roles->pluck('name')->first(),
-                    'status' => $user->status,
-                ];
-            });
+        $user = User::with('roles')->select('id', 'name', 'email', 'mobile', 'status')->findOrFail($id);
         $roles = \Spatie\Permission\Models\Role::select('id', 'name')->get();
-        return \Inertia\Inertia::render('Access/Users/Index', [
-            'users' => $users,
+        return \Inertia\Inertia::render('Access/Users/Edit', [
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'mobile' => $user->mobile,
+                'role' => $user->roles->pluck('name')->first(),
+                'status' => $user->status,
+            ],
             'roles' => $roles,
         ]);
     }

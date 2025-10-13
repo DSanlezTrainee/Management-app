@@ -25,7 +25,6 @@ const props = defineProps({
     functions: Array,
 });
 
-
 const form = useForm({
     first_name: "",
     last_name: "",
@@ -46,9 +45,16 @@ function submit() {
 
 <template>
     <AppLayout title="Create Contact">
-        <form @submit.prevent="submit" class="max-w-2xl mx-auto space-y-4">
+        <template #header>
+            <h2
+                class="text-3xl font-extrabold text-cyan-900 dark:text-cyan-100 tracking-tight mb-6"
+            >
+                Create Contact
+            </h2>
+        </template>
+        <form @submit.prevent="submit" class="max-w-2xl mx-auto space-y-8">
             <div
-                class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 items-start"
+                class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 items-start bg-white/80 dark:bg-slate-800/80 p-6 rounded-xl shadow"
             >
                 <FormField name="first_name">
                     <FormItem class="w-full">
@@ -299,7 +305,7 @@ function submit() {
             <div class="col-span-1 md:col-span-2 mt-8 flex justify-end">
                 <button
                     type="submit"
-                    class="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+                    class="inline-flex items-center gap-2 px-6 py-2 rounded-lg bg-cyan-700 text-white font-semibold shadow hover:bg-cyan-800 transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
                     :disabled="form.processing"
                 >
                     {{ form.processing ? "Creating..." : "Create" }}

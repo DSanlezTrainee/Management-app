@@ -73,7 +73,7 @@ watch(
     <AppLayout title="Company Settings">
         <template #header>
             <h2
-                class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight"
+                class="text-3xl font-extrabold text-cyan-900 dark:text-cyan-100 tracking-tight mb-6"
             >
                 Company Settings
             </h2>
@@ -95,9 +95,13 @@ watch(
             </div>
         </template>
         <div class="max-w-xl mx-auto py-8">
-            <form @submit.prevent="submit" class="space-y-6">
+            <form
+                @submit.prevent="submit"
+                class="space-y-8 bg-white/80 dark:bg-slate-800/80 p-6 rounded-xl shadow"
+            >
                 <div class="flex flex-col items-center">
-                    <label class="block text-sm font-medium text-gray-700 mb-2"
+                    <label
+                        class="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2"
                         >Logo</label
                     >
                     <input
@@ -110,69 +114,103 @@ watch(
                         <img
                             :src="logoPreview"
                             alt="Logo Preview"
-                            class="h-20 object-contain border rounded"
+                            class="h-20 object-contain border rounded shadow"
                         />
                     </div>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700"
+                    <label
+                        class="block text-sm font-medium text-gray-700 dark:text-gray-200"
                         >Name</label
                     >
                     <input
                         v-model="form.name"
                         type="text"
-                        class="mt-1 block w-full rounded border-gray-300"
+                        class="mt-1 block w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400 transition"
                         required
                     />
+                    <p
+                        v-if="form.errors.name"
+                        class="text-sm text-red-600 mt-1"
+                    >
+                        {{ form.errors.name }}
+                    </p>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700"
+                    <label
+                        class="block text-sm font-medium text-gray-700 dark:text-gray-200"
                         >Address</label
                     >
                     <input
                         v-model="form.address"
                         type="text"
-                        class="mt-1 block w-full rounded border-gray-300"
+                        class="mt-1 block w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400 transition"
+                        required
                     />
+                    <p
+                        v-if="form.errors.address"
+                        class="text-sm text-red-600 mt-1"
+                    >
+                        {{ form.errors.address }}
+                    </p>
                 </div>
                 <div class="flex gap-2">
                     <div class="flex-1">
-                        <label class="block text-sm font-medium text-gray-700"
+                        <label
+                            class="block text-sm font-medium text-gray-700 dark:text-gray-200"
                             >Postal Code</label
                         >
                         <input
                             v-model="form.postal_code"
                             type="text"
-                            class="mt-1 block w-full rounded border-gray-300"
+                            class="mt-1 block w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400 transition"
                             placeholder="1234-567"
+                            required
                         />
+                        <p
+                            v-if="form.errors.postal_code"
+                            class="text-sm text-red-600 mt-1"
+                        >
+                            {{ form.errors.postal_code }}
+                        </p>
                     </div>
                     <div class="flex-1">
-                        <label class="block text-sm font-medium text-gray-700"
+                        <label
+                            class="block text-sm font-medium text-gray-700 dark:text-gray-200"
                             >City</label
                         >
                         <input
                             v-model="form.city"
                             type="text"
-                            class="mt-1 block w-full rounded border-gray-300"
+                            class="mt-1 block w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400 transition"
                         />
+                        <p
+                            v-if="form.errors.city"
+                            class="text-sm text-red-600 mt-1"
+                        >
+                            {{ form.errors.city }}
+                        </p>
                     </div>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700"
+                    <label
+                        class="block text-sm font-medium text-gray-700 dark:text-gray-200"
                         >NIF</label
                     >
                     <input
                         v-model="form.nif"
                         type="text"
-                        class="mt-1 block w-full rounded border-gray-300"
+                        class="mt-1 block w-full rounded-lg border-gray-300 focus:ring-2 focus:ring-cyan-400 focus:border-cyan-400 transition"
                         required
                     />
+                    <p v-if="form.errors.nif" class="text-sm text-red-600 mt-1">
+                        {{ form.errors.nif }}
+                    </p>
                 </div>
                 <div class="flex justify-end">
                     <button
                         type="submit"
-                        class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                        class="inline-flex items-center gap-2 px-6 py-2 rounded-lg bg-cyan-700 text-white font-semibold shadow hover:bg-cyan-800 transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
                         :disabled="form.processing"
                     >
                         {{ form.processing ? "Saving..." : "Save" }}

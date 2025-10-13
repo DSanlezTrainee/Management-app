@@ -22,7 +22,10 @@ function submit() {
 
 <template>
     <AppLayout title="Create VAT Rate">
-        <form @submit.prevent="submit" class="max-w-lg mx-auto space-y-4">
+        <form
+            @submit.prevent="submit"
+            class="max-w-lg mx-auto space-y-8 bg-white/80 dark:bg-slate-800/80 p-6 rounded-xl shadow"
+        >
             <FormField name="name">
                 <FormItem class="w-full">
                     <FormLabel>Name</FormLabel>
@@ -75,7 +78,7 @@ function submit() {
             <div class="flex justify-end">
                 <button
                     type="submit"
-                    class="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+                    class="inline-flex items-center gap-2 px-6 py-2 rounded-lg bg-cyan-700 text-white font-semibold shadow hover:bg-cyan-800 transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
                     :disabled="form.processing"
                 >
                     {{ form.processing ? "Creating..." : "Create" }}

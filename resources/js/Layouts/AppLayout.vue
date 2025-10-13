@@ -37,11 +37,13 @@ const logout = () => {
         <Banner />
 
         <div
-            class="min-h-screen bg-gradient-to-br from-blue-50 via-blue-100 to-blue-300 dark:from-blue-900 dark:via-blue-800 dark:to-blue-700 text-gray-700 dark:text-gray-200 flex flex-items justify-center"
+            class="min-h-screen bg-gradient-to-br from-cyan-50 via-blue-100 to-teal-200 dark:from-cyan-900 dark:via-blue-900 dark:to-teal-800 text-gray-700 dark:text-gray-100 flex flex-items justify-center transition-colors duration-500"
+            style="backdrop-filter: blur(2px)"
         >
             <!-- Navigation -->
             <nav
-                class="w-full fixed top-0 left-0 z-30 bg-blue-900/90 dark:bg-blue-950/90 backdrop-blur-lg shadow-md border-b border-blue-800 flex items-center justify-between px-6 sm:px-12 py-4"
+                class="w-full fixed top-0 left-0 z-30 bg-gradient-to-r from-cyan-700/90 via-blue-800/80 to-teal-700/90 dark:from-cyan-900/90 dark:via-blue-900/80 dark:to-teal-800/90 backdrop-blur-xl shadow-lg flex items-center justify-between px-8 sm:px-16 py-3 rounded-b-2xl border-b border-cyan-800/30 dark:border-cyan-900/40 transition-all duration-500"
+                style="backdrop-filter: blur(6px)"
             >
                 <!-- Logo + Company Name -->
                 <div class="flex items-center gap-2">
@@ -74,7 +76,7 @@ const logout = () => {
                         <template #trigger>
                             <button
                                 type="button"
-                                class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-full text-blue-900 bg-blue-100 hover:bg-blue-200 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF2D20] dark:text-blue-100 dark:bg-blue-800 dark:hover:bg-blue-700 dark:focus-visible:ring-white shadow-sm"
+                                class="inline-flex items-center px-3 py-2 border-none text-sm leading-4 font-bold rounded text-cyan-100 bg-transparent hover:underline hover:text-white transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
                             >
                                 Entities
                                 <svg
@@ -117,18 +119,21 @@ const logout = () => {
                     <NavLink
                         :href="route('contacts.index')"
                         :active="route().current('contacts.index')"
+                        class="rounded px-3 font-bold text-cyan-100 bg-transparent hover:underline hover:text-white transition-all duration-200"
                     >
                         Contacts
                     </NavLink>
                     <NavLink
                         :href="route('proposals.index')"
                         :active="route().current('proposals.index')"
+                        class="rounded px-3 font-bold text-cyan-100 bg-transparent hover:underline hover:text-white transition-all duration-200"
                     >
                         Proposals
                     </NavLink>
                     <NavLink
                         :href="route('calendar.index')"
                         :active="route().current('calendar.index')"
+                        class="rounded px-3 font-bold text-cyan-100 bg-transparent hover:underline hover:text-white transition-all duration-200"
                     >
                         Calendar
                     </NavLink>
@@ -136,7 +141,7 @@ const logout = () => {
                         <template #trigger>
                             <button
                                 type="button"
-                                class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-full text-blue-900 bg-blue-100 hover:bg-blue-200 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF2D20] dark:text-blue-100 dark:bg-blue-800 dark:hover:bg-blue-700 dark:focus-visible:ring-white shadow-sm"
+                                class="inline-flex items-center px-3 py-2 border-none text-sm leading-4 font-bold rounded text-cyan-100 bg-transparent hover:underline hover:text-white transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
                             >
                                 Orders
                                 <svg
@@ -174,11 +179,18 @@ const logout = () => {
                             </div>
                         </template>
                     </Dropdown>
+                    <NavLink
+                        :href="route('supplier-invoices.index')"
+                        :active="route().current('supplier-invoices.index')"
+                        class="rounded px-3 font-bold text-cyan-100 bg-transparent hover:underline hover:text-white transition-all duration-200"
+                    >
+                        Supplier Invoices
+                    </NavLink>
                     <Dropdown align="left" width="48">
                         <template #trigger>
                             <button
                                 type="button"
-                                class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-full text-blue-900 bg-blue-100 hover:bg-blue-200 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF2D20] dark:text-blue-100 dark:bg-blue-800 dark:hover:bg-blue-700 dark:focus-visible:ring-white shadow-sm"
+                                class="inline-flex items-center px-3 py-2 border-none text-sm leading-4 font-bold rounded text-cyan-100 bg-transparent hover:underline hover:text-white transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
                             >
                                 Access Management
                                 <svg
@@ -218,7 +230,7 @@ const logout = () => {
                         <template #trigger>
                             <button
                                 type="button"
-                                class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-full text-blue-900 bg-blue-100 hover:bg-blue-200 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF2D20] dark:text-blue-100 dark:bg-blue-800 dark:hover:bg-blue-700 dark:focus-visible:ring-white shadow-sm"
+                                class="inline-flex items-center px-3 py-2 border-none text-sm leading-4 font-bold rounded text-cyan-100 bg-transparent hover:underline hover:text-white transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
                             >
                                 Configurations
                                 <svg
@@ -306,13 +318,13 @@ const logout = () => {
                     <template v-if="!$page.props.auth.user">
                         <Link
                             :href="route('login')"
-                            class="rounded-full px-5 py-2 font-semibold text-blue-900 bg-blue-100 hover:bg-blue-200 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF2D20] dark:text-blue-100 dark:bg-blue-800 dark:hover:bg-blue-700 dark:focus-visible:ring-white shadow-sm"
+                            class="rounded px-5 py-2 font-semibold text-cyan-900 dark:text-cyan-100 bg-transparent hover:underline hover:text-cyan-700 dark:hover:text-cyan-300 transition-all duration-200"
                         >
                             Log in
                         </Link>
                         <Link
                             :href="route('register')"
-                            class="rounded-full px-5 py-2 font-semibold text-blue-900 bg-blue-100 hover:bg-blue-200 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF2D20] dark:text-blue-100 dark:bg-blue-800 dark:hover:bg-blue-700 dark:focus-visible:ring-white shadow-sm"
+                            class="rounded px-5 py-2 font-semibold text-cyan-900 dark:text-cyan-100 bg-transparent hover:underline hover:text-cyan-700 dark:hover:text-cyan-300 transition-all duration-200"
                         >
                             Register
                         </Link>
@@ -333,7 +345,7 @@ const logout = () => {
                                     <span class="inline-flex rounded-md">
                                         <button
                                             type="button"
-                                            class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-full text-blue-900 bg-blue-100 hover:bg-blue-200 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF2D20] dark:text-blue-100 dark:bg-blue-800 dark:hover:bg-blue-700 dark:focus-visible:ring-white shadow-sm"
+                                            class="inline-flex items-center px-3 py-2 border-none text-sm leading-4 font-bold rounded text-cyan-100 bg-transparent hover:underline hover:text-white transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
                                         >
                                             {{
                                                 $page.props.auth.user
@@ -478,7 +490,7 @@ const logout = () => {
                                     <span v-else class="inline-flex rounded-md">
                                         <button
                                             type="button"
-                                            class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-full text-blue-900 bg-blue-100 hover:bg-blue-200 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF2D20] dark:text-blue-100 dark:bg-blue-800 dark:hover:bg-blue-700 dark:focus-visible:ring-white shadow-sm"
+                                            class="inline-flex items-center px-3 py-2 border-none text-sm leading-4 font-bold rounded text-cyan-100 bg-transparent hover:underline hover:text-white transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
                                         >
                                             {{ $page.props.auth.user.name }}
                                             <svg
@@ -540,13 +552,13 @@ const logout = () => {
                     >
                         <Link
                             :href="route('login')"
-                            class="rounded-full px-3 py-1 text-sm font-semibold text-blue-900 bg-blue-100 hover:bg-blue-200 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF2D20] dark:text-blue-100 dark:bg-blue-800 dark:hover:bg-blue-700 dark:focus-visible:ring-white shadow-sm"
+                            class="rounded-xl px-3 py-1 text-sm font-semibold text-blue-900 bg-white/70 hover:bg-blue-200/80 hover:text-blue-950 transition-all duration-200 dark:text-blue-100 dark:bg-blue-800/80 dark:hover:bg-blue-700/80 shadow-md backdrop-blur"
                         >
                             Log in
                         </Link>
                         <Link
                             :href="route('register')"
-                            class="rounded-full px-3 py-1 text-sm font-semibold text-blue-900 bg-blue-100 hover:bg-blue-200 transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF2D20] dark:text-blue-100 dark:bg-blue-800 dark:hover:bg-blue-700 dark:focus-visible:ring-white shadow-sm"
+                            class="rounded-xl px-3 py-1 text-sm font-semibold text-blue-900 bg-white/70 hover:bg-blue-200/80 hover:text-blue-950 transition-all duration-200 dark:text-blue-100 dark:bg-blue-800/80 dark:hover:bg-blue-700/80 shadow-md backdrop-blur"
                         >
                             Register
                         </Link>
@@ -555,7 +567,7 @@ const logout = () => {
                     <!-- Hamburger -->
                     <div v-if="$page.props.auth.user" class="sm:hidden">
                         <button
-                            class="inline-flex items-center justify-center p-2 rounded-full text-blue-200 hover:text-blue-100 hover:bg-blue-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF2D20] transition duration-150 ease-in-out"
+                            class="inline-flex items-center justify-center p-2 rounded-xl text-blue-200 hover:text-blue-100 hover:bg-blue-800/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#FF2D20] transition duration-150 ease-in-out shadow-md"
                             @click="
                                 showingNavigationDropdown =
                                     !showingNavigationDropdown
@@ -757,7 +769,7 @@ const logout = () => {
             </div>
 
             <!-- Page Content & Heading Aligned -->
-            <main class="pt-20">
+            <main class="pt-24 transition-all duration-500">
                 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div v-if="$slots.header" class="mb-4 ms-0 sm:ms-8 mt-5">
                         <slot name="header" />

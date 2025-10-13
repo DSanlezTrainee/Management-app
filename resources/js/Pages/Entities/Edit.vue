@@ -68,15 +68,16 @@ function submit() {
     <AppLayout title="Edit Entity">
         <template #header>
             <h2
-                class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight"
+                class="text-3xl font-extrabold text-cyan-900 dark:text-cyan-100 tracking-tight mb-2 flex items-center gap-2"
             >
+               
                 Edit Entity
             </h2>
         </template>
         <div class="py-6 max-w-3xl mx-auto">
-            <form @submit.prevent="submit">
+            <form @submit.prevent="submit" class="space-y-8">
                 <div
-                    class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4 items-start"
+                    class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6 items-start bg-white/80 dark:bg-slate-800/80 p-6 rounded-xl shadow"
                 >
                     <div class="flex flex-col gap-1 w-full">
                         <FormField name="type">
@@ -437,12 +438,39 @@ function submit() {
                         </FormField>
                     </div>
                 </div>
-                <div class="col-span-1 md:col-span-2 mt-8 flex justify-end">
+                <div
+                    class="col-span-1 md:col-span-2 mt-8 flex justify-end gap-3"
+                >
                     <button
                         type="submit"
-                        class="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition"
+                        class="inline-flex items-center gap-2 px-6 py-2 rounded-lg bg-cyan-700 text-white font-semibold shadow hover:bg-cyan-800 transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400"
                         :disabled="form.processing"
                     >
+                        <svg
+                            v-if="form.processing"
+                            class="w-5 h-5 animate-spin"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            viewBox="0 0 24 24"
+                        >
+                            <circle class="opacity-25" cx="12" cy="12" r="10" />
+                            <path class="opacity-75" d="M4 12a8 8 0 018-8v8z" />
+                        </svg>
+                        <svg
+                            v-else
+                            class="w-5 h-5"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M12 4v16m8-8H4"
+                            />
+                        </svg>
                         {{ form.processing ? "Saving..." : "Save" }}
                     </button>
                 </div>
