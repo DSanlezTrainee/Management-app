@@ -5,9 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
+use App\Traits\LogsActivityHelper;
 
 class UserController extends Controller
 {
+
+    use LogsActivityHelper;
     /**
      * Display a listing of the resource.
      */
@@ -27,6 +30,8 @@ class UserController extends Controller
                 ];
             });
         $roles = \Spatie\Permission\Models\Role::select('id', 'name')->get();
+        // Log de visualização da lista de utilizadores
+        $this->logActivity('viewed users list');
         return \Inertia\Inertia::render('Access/Users/Index', [
             'users' => $users,
             'roles' => $roles,
@@ -66,8 +71,8 @@ class UserController extends Controller
             'password' => bcrypt($validated['password']),
         ]);
         $user->syncRoles([$validated['role']]);
-
-        return redirect()->route('users.index')->with('success', 'Utilizador criado com sucesso!');
+        $this->logActivity('created user', $user);
+        return redirect()->route('users.index')->with('success', 'User created successfully!');
     }
 
     /**
@@ -85,7 +90,7 @@ class UserController extends Controller
     {
         $users = User::with('roles')
             ->select('id', 'name', 'email', 'mobile', 'status')
-            ->paginate(20) // <--- Usa paginação
+            ->paginate(20)
             ->through(function ($user) {
                 return [
                     'id' => $user->id,
@@ -127,8 +132,8 @@ class UserController extends Controller
         }
         $user->save();
         $user->syncRoles([$validated['role']]);
-
-        return redirect()->route('users.index')->with('success', 'Utilizador atualizado com sucesso!');
+        $this->logActivity('updated user', $user);
+        return redirect()->route('users.index')->with('success', 'User updated successfully!');
     }
 
     /**
@@ -136,6 +141,9 @@ class UserController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $user = User::findOrFail($id);
+        $user->delete();
+        $this->logActivity('deleted user', $user);
+        return redirect()->route('users.index')->with('success', 'User removed successfully!');
     }
 }

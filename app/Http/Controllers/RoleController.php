@@ -1,15 +1,17 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Illuminate\Http\Request;
+use App\Traits\LogsActivityHelper;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
-use App\Models\User;
 
-use Illuminate\Http\Request;
+
 
 class RoleController extends Controller
 {
+    use LogsActivityHelper;
+
     /**
      * Display a listing of the resource.
      */
@@ -19,6 +21,7 @@ class RoleController extends Controller
         return \Inertia\Inertia::render('Access/Roles/Index', [
             'roles' => $roles,
         ]);
+        $this->logActivity('viewed roles list');
     }
 
     /**
@@ -49,7 +52,8 @@ class RoleController extends Controller
             'guard_name' => 'web',
         ]);
         $role->syncPermissions($validated['permissions'] ?? []);
-        return redirect()->route('roles.index')->with('success', 'Grupo criado com sucesso!');
+        $this->logActivity('created role', $role);
+        return redirect()->route('roles.index')->with('success', 'Group created successfully!');
     }
 
     /**
@@ -89,7 +93,8 @@ class RoleController extends Controller
         $role->status = $validated['status'];
         $role->save();
         $role->syncPermissions($validated['permissions'] ?? []);
-        return redirect()->route('roles.index')->with('success', 'Grupo atualizado com sucesso!');
+        $this->logActivity('updated role', $role);
+        return redirect()->route('roles.index')->with('success', 'Group updated successfully!');
     }
 
     /**
@@ -99,6 +104,7 @@ class RoleController extends Controller
     {
         $role = Role::findOrFail($id);
         $role->delete();
-        return redirect()->route('roles.index')->with('success', 'Grupo removido com sucesso!');
+        $this->logActivity('deleted role', $role);
+        return redirect()->route('roles.index')->with('success', 'Group removed successfully!');
     }
 }

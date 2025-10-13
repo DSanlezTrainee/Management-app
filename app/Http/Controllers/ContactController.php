@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use PSpell\Config;
+use App\Traits\LogsActivityHelper;
 use Inertia\Inertia;
 use App\Models\Entity;
 use App\Models\Contact;
@@ -11,13 +11,14 @@ use App\Models\ContactFunction;
 
 class ContactController extends Controller
 {
+    use LogsActivityHelper;
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
         $contacts = Contact::with(['entity', 'contactFunction'])->paginate(20);
-
+        $this->logActivity('viewed contacts list');
         return Inertia::render('Contacts/Index', [
             'contacts' => $contacts,
         ]);
@@ -62,8 +63,8 @@ class ContactController extends Controller
         $nextNumber = (Contact::max('number') ?? 0) + 1;
         $validated['number'] = $nextNumber;
 
-        Contact::create($validated);
-
+        $contact = Contact::create($validated);
+        $this->logActivity('created contact', $contact);
         return redirect()->route('contacts.index')->with('success', 'Contact created successfully!');
     }
 
@@ -114,7 +115,7 @@ class ContactController extends Controller
         ]);
 
         $contact->update($validated);
-
+        $this->logActivity('updated contact', $contact);
         return redirect()->route('contacts.index')->with('success', 'Contact updated successfully!');
     }
 
@@ -124,7 +125,7 @@ class ContactController extends Controller
     public function destroy(Contact $contact)
     {
         $contact->delete();
-
+        $this->logActivity('deleted contact', $contact);
         return redirect()->route('contacts.index')->with('success', 'Contact deleted successfully!');
     }
 }

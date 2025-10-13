@@ -189,9 +189,7 @@ const logout = () => {
                                 </DropdownLink>
                                 <DropdownLink
                                     :href="route('roles.index')"
-                                    :active="
-                                        route().current('roles.index')
-                                    "
+                                    :active="route().current('roles.index')"
                                 >
                                     Permissions
                                 </DropdownLink>
@@ -246,6 +244,12 @@ const logout = () => {
                                     :active="route().current('vat-rates.index')"
                                 >
                                     Finance:Vat Rates
+                                </DropdownLink>
+                                <DropdownLink
+                                    :href="route('logs.index')"
+                                    :active="route().current('logs.index')"
+                                >
+                                    Logs
                                 </DropdownLink>
                             </div>
                         </template>

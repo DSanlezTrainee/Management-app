@@ -2,15 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Log;
-
 use Inertia\Inertia;
 use App\Models\Entity;
 use App\Models\Country;
 use Illuminate\Http\Request;
+use App\Traits\LogsActivityHelper;
 
 class EntityController extends Controller
 {
+    use LogsActivityHelper;
+
     /**
      * Display only clients.
      */
@@ -20,7 +21,7 @@ class EntityController extends Controller
             $query->where('type', 'client')
                 ->orWhere('type', 'both');
         })->with('country')->paginate(20);
-
+        $this->logActivity('viewed clients list');
         return Inertia::render('Entities/Index', [
             'entities' => $entities,
             'type' => 'client'
@@ -36,7 +37,7 @@ class EntityController extends Controller
             $query->where('type', 'supplier')
                 ->orWhere('type', 'both');
         })->with('country')->paginate(20);
-
+        $this->logActivity('viewed suppliers list');
         return Inertia::render('Entities/Index', [
             'entities' => $entities,
             'type' => 'supplier'
@@ -104,14 +105,13 @@ class EntityController extends Controller
         $validated['number'] = $nextNumber;
 
         $entity = Entity::create($validated);
-
+        $this->logActivity('created entity', $entity);
         // Redirects for a stored URL in the session, or to the default list if it doesn't exist
         $redirectUrl = session('entity_create_referer');
         if ($redirectUrl) {
             session()->forget('entity_create_referer');
             return redirect($redirectUrl)->with('success', 'Entity created successfully!');
         }
-
         // Fallback: redirect based on the entity type
         if ($entity->type === 'client' || $entity->type === 'both') {
             return redirect()->route('entities.clients')->with('success', 'Entity created successfully!');
@@ -185,7 +185,7 @@ class EntityController extends Controller
         ]);
 
         $entity->update($validated);
-
+        $this->logActivity('updated entity', $entity);
         if ($entity->type === 'client' || $entity->type === 'both') {
             return redirect()->route('entities.clients')->with('success', 'Entity updated successfully!');
         } else {
@@ -200,7 +200,7 @@ class EntityController extends Controller
     {
         $type = $entity->type;
         $entity->delete();
-
+        $this->logActivity('deleted entity', $entity);
         if ($type === 'client' || $type === 'both') {
             return redirect()->route('entities.clients')->with('success', 'Entity deleted successfully!');
         } else {

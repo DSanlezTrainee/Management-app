@@ -6,16 +6,19 @@ use App\Models\Proposal;
 use App\Models\Entity;
 use App\Models\Article;
 use App\Models\Order;
-use App\Models\OrderLine;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Str;
+use App\Traits\LogsActivityHelper;
 
 class ProposalController extends Controller
 {
+    use LogsActivityHelper;
+
     public function index()
     {
         $proposals = Proposal::with('client')->orderByDesc('date')->paginate(20);
+        $this->logActivity('viewed proposals list');
         return Inertia::render('Proposals/Index', [
             'proposals' => $proposals,
         ]);
@@ -60,7 +63,7 @@ class ProposalController extends Controller
         foreach ($validated['lines'] as $line) {
             $proposal->lines()->create($line);
         }
-
+        $this->logActivity('created proposal', $proposal);
         return redirect()->route('proposals.index')->with('success', 'Proposal created successfully!');
     }
 
@@ -112,13 +115,15 @@ class ProposalController extends Controller
         foreach ($validated['lines'] as $line) {
             $proposal->lines()->create($line);
         }
+        $this->logActivity('updated proposal', $proposal);
         return redirect()->route('proposals.index')->with('success', 'Proposal updated successfully!');
     }
 
     public function destroy(Proposal $proposal)
     {
-        $proposal->delete();
-        return redirect()->route('proposals.index')->with('success', 'Proposal deleted successfully!');
+    $proposal->delete();
+    $this->logActivity('deleted proposal', $proposal);
+    return redirect()->route('proposals.index')->with('success', 'Proposal deleted successfully!');
     }
 
     public function pdf(Proposal $proposal)

@@ -2,15 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Traits\LogsActivityHelper;
 use Inertia\Inertia;
 use App\Models\VatRate;
 use Illuminate\Http\Request;
 
 class VatRateController extends Controller
 {
+    use LogsActivityHelper;
     public function index()
     {
         $vatRates = VatRate::orderBy('name')->paginate(20);
+        $this->logActivity('viewed vat rates list');
         return Inertia::render(
             'VatRates/Index',
             [
@@ -32,8 +35,8 @@ class VatRateController extends Controller
             'active' => 'required|boolean',
         ]);
 
-        VatRate::create($validated);
-
+        $vatRate = VatRate::create($validated);
+        $this->logActivity('created vat rate', $vatRate);
         return redirect()->route('vat-rates.index')->with('success', 'Vat rate created successfully!');
     }
 
@@ -61,12 +64,15 @@ class VatRateController extends Controller
             'active' => 'required|boolean'
         ]);
 
-        return redirect()->route('vat-rates.index')->with('sucess', 'VAT rate updated successfully!');
+        $vatRate->update($validated);
+        $this->logActivity('updated vat rate', $vatRate);
+        return redirect()->route('vat-rates.index')->with('success', 'VAT rate updated successfully!');
     }
 
     public function destroy(VatRate $vatRate)
     {
         $vatRate->delete();
+        $this->logActivity('deleted vat rate', $vatRate);
         return redirect()->route('vat-rates.index')->with('success', 'VAT rate deleted successfully!');
     }
 }

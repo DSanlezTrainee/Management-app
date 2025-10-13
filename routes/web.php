@@ -3,12 +3,18 @@
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
+use App\Http\Controllers\LogController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\VatRateController;
 
 Route::middleware(['auth'])->group(function () {
-    
+
+
+
+    Route::get('/logs', [LogController::class, 'index'])->name('logs.index');
+    Route::delete('/logs/{id}', [LogController::class, 'destroy'])->name('logs.destroy');
+
     Route::resource('roles', App\Http\Controllers\RoleController::class);
 
     // User management routes  

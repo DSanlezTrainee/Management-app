@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Traits\LogsActivityHelper;
 use Inertia\Inertia;
 use App\Models\Entity;
 use Illuminate\Http\Request;
@@ -11,12 +12,14 @@ use Illuminate\Support\Facades\Mail;
 
 class SupplierInvoiceController extends Controller
 {
+    use LogsActivityHelper;
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
         $invoices = SupplierInvoice::with(['supplier', 'supplierOrder'])->orderByDesc('invoice_date')->paginate(20);
+        $this->logActivity('viewed supplier invoices list');
         return Inertia::render('SupplierInvoices/Index', [
             'invoices' => $invoices,
         ]);
@@ -63,6 +66,7 @@ class SupplierInvoiceController extends Controller
             $data['payment_receipt'] = $request->file('payment_receipt')->store('invoices/receipts', 'public');
         }
         $invoice = SupplierInvoice::create($data);
+        $this->logActivity('created supplier invoice', $invoice);
 
         if ($invoice->status === 'paid' && $invoice->payment_receipt && $invoice->supplier && $invoice->supplier->email) {
             Mail::to($invoice->supplier->email)->send(
@@ -123,6 +127,7 @@ class SupplierInvoiceController extends Controller
             $data['payment_receipt'] = $request->file('payment_receipt')->store('invoices/receipts', 'public');
         }
         $invoice->update($data);
+        $this->logActivity('updated supplier invoice', $invoice);
 
 
         if ($invoice->status === 'paid' && $invoice->payment_receipt && $invoice->supplier && $invoice->supplier->email) {
@@ -139,6 +144,7 @@ class SupplierInvoiceController extends Controller
     public function destroy(SupplierInvoice $supplierInvoice)
     {
         $supplierInvoice->delete();
+        $this->logActivity('deleted supplier invoice', $supplierInvoice);
         return redirect()->route('supplier-invoices.index')->with('success', 'Invoice deleted successfully!');
     }
 }

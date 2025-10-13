@@ -9,15 +9,18 @@ use App\Models\SupplierOrderLine;
 use App\Models\Entity;
 use App\Models\Article;
 use Inertia\Inertia;
+use App\Traits\LogsActivityHelper;
 
 class SupplierOrderController extends Controller
 {
+    use LogsActivityHelper;
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
         $orders = SupplierOrder::with('supplier')->orderByDesc('date')->paginate(20);
+        $this->logActivity('viewed supplier orders list');
         return Inertia::render('SupplierOrders/Index', [
             'orders' => $orders,
         ]);
@@ -64,6 +67,7 @@ class SupplierOrderController extends Controller
         foreach ($validated['lines'] as $line) {
             $order->lines()->create($line);
         }
+        $this->logActivity('created supplier order', $order);
         return redirect()->route('supplier-orders.index')->with('success', 'Encomenda de fornecedor criada!');
     }
 
@@ -121,6 +125,7 @@ class SupplierOrderController extends Controller
         foreach ($validated['lines'] as $line) {
             $order->lines()->create($line);
         }
+        $this->logActivity('updated supplier order', $order);
         return redirect()->route('supplier-orders.index')->with('success', 'Encomenda de fornecedor atualizada!');
     }
 
@@ -129,7 +134,8 @@ class SupplierOrderController extends Controller
      */
     public function destroy(SupplierOrder $supplierOrder)
     {
-        $supplierOrder->delete();
-        return redirect()->route('supplier-orders.index')->with('success', 'Supplier order deleted!');
+    $supplierOrder->delete();
+    $this->logActivity('deleted supplier order', $supplierOrder);
+    return redirect()->route('supplier-orders.index')->with('success', 'Supplier order deleted!');
     }
 }

@@ -1,21 +1,24 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use Inertia\Inertia;
 use App\Models\Article;
 use App\Models\VatRate;
 use Illuminate\Http\Request;
+use App\Traits\LogsActivityHelper;
 
 
 class ArticleController extends Controller
 {
+    use LogsActivityHelper;
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
         $articles = Article::with('vatRate')->paginate(20);
+        $this->logActivity('viewed articles list');
         return Inertia::render('Articles/Index', [
             'articles' => $articles,
         ]);
@@ -57,8 +60,8 @@ class ArticleController extends Controller
         $priceWithVat = $validated['price'] * (1 + ($vatRate->rate / 100));
         $validated['price_with_vat'] = round($priceWithVat, 2);
 
-        Article::create($validated);
-
+        $article = Article::create($validated);
+        $this->logActivity('created article', $article);
         return redirect()->route('articles.index')->with('success', 'Article created successfully.');
     }
 
@@ -67,6 +70,7 @@ class ArticleController extends Controller
      */
     public function show(Article $article)
     {
+        $this->logActivity('viewed article', $article);
         return Inertia::render('Articles/Show', [
             'article' => $article->load('vatRate')
         ]);
@@ -110,7 +114,7 @@ class ArticleController extends Controller
         $validated['price_with_vat'] = round($priceWithVat, 2);
 
         $article->update($validated);
-
+        $this->logActivity('updated article', $article);
         return redirect()->route('articles.index')->with('success', 'Article updated successfully!');
     }
 
@@ -120,6 +124,7 @@ class ArticleController extends Controller
     public function destroy(Article $article)
     {
         $article->delete();
+        $this->logActivity('deleted article', $article);
         return redirect()->route('articles.index')->with('success', 'Article deleted successfully!');
     }
 }

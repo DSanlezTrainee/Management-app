@@ -8,15 +8,19 @@ use App\Models\Entity;
 use App\Models\Article;
 use Illuminate\Http\Request;
 use App\Models\SupplierOrder;
+use App\Traits\LogsActivityHelper;
 
 class OrderController extends Controller
 {
+    use LogsActivityHelper;
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
         $orders = Order::with('client')->orderByDesc('date')->paginate(20);
+        $this->logActivity('viewed orders list');
         return Inertia::render('Orders/Index', [
             'orders' => $orders,
         ]);
@@ -64,6 +68,7 @@ class OrderController extends Controller
             'total' => collect($validated['lines'])->sum(fn($l) => $l['price'] * $l['quantity']),
             'status' => $validated['status'],
         ]);
+        $this->logActivity('created order', $order);
         foreach ($validated['lines'] as $line) {
             $order->lines()->create($line);
         }
@@ -123,6 +128,7 @@ class OrderController extends Controller
             'status' => $validated['status'],
             'total' => collect($validated['lines'])->sum(fn($l) => $l['price'] * $l['quantity']),
         ]);
+        $this->logActivity('updated order', $order);
         $order->lines()->delete();
         foreach ($validated['lines'] as $line) {
             $order->lines()->create($line);
@@ -135,8 +141,9 @@ class OrderController extends Controller
      */
     public function destroy(Order $order)
     {
-        $order->delete();
-        return redirect()->route('orders.index')->with('success', 'Order deleted successfully!');
+    $order->delete();
+    $this->logActivity('deleted order', $order);
+    return redirect()->route('orders.index')->with('success', 'Order deleted successfully!');
     }
 
     /**
